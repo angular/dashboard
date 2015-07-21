@@ -1,0 +1,34 @@
+{
+  "name": "npm",
+  "version": "0.0.1",
+  "description": "An application to the help the Angular team stay organized as they tackle incoming issues.",
+  "main": "dist/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttowncompiled/AngularDashboard.git"
+  },
+  "keywords": [
+    "Angular",
+    "Dashboard"
+  ],
+  "author": "mhever, ttowncompiled",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ttowncompiled/AngularDashboard/issues"
+  },
+  "homepage": "https://github.com/ttowncompiled/AngularDashboard#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "clang-format": "^1.0.28",
+    "gulp": "^3.9.0",
+    "gulp-clang-format": "^1.0.21",
+    "gulp-clean": "^0.3.1",
+    "gulp-typescript": "^2.8.0",
+    "http-server": "^0.8.0",
+    "tsd": "^0.6.3",
+    "typescript": "^1.5.3"
+  }
+}
