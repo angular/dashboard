@@ -38,7 +38,7 @@ gulp.task('!clean', function() {
  * Transcompile all TypeScript code to JavaScript.
  */
 gulp.task('build', ['!clean'], function() {
-  var tsResult = tsProject.src().pipe(gulpTsc(tsProject));
+  var tsResult = gulp.src(['app.ts', 'components/**/*.ts']).pipe(gulpTsc(tsProject));
   return tsResult.js.pipe(gulp.dest(tsProject.options.outDir));
 });
 

@@ -1,17 +1,11 @@
 /// <reference path="typings/angular2/angular2.d.ts" />
-import {Component, View, bootstrap} from 'angular2/angular2';
+import {bootstrap} from 'angular2/angular2';
+import {Milestones} from 'components/milestones/milestones';
+import {Hotlist} from 'components/hotlist/hotlist';
+import {Backlog} from 'components/backlog/backlog';
+import {Triage} from 'components/triage/triage';
 
-@Component({
-  selector: 'my-app'
-})
-@View({
-  template: '<h1>Hello {{ name }}</h1>'
-})
-class MyAppComponent {
-  name: string;
-
-  constructor() {
-    this.name = 'Alice';
-  }
-}
-bootstrap(MyAppComponent);
+bootstrap(Milestones);
+bootstrap(Hotlist);
+bootstrap(Backlog);
+bootstrap(Triage);

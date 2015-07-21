@@ -14,7 +14,40 @@
     <script src="https://code.angularjs.org/2.0.0-alpha.31/angular2.dev.js"></script>
   </head>
   <body>
-    <my-app>Loading...</my-app>
+
+    <!-- Navbar -->
+    <div class="navbar-fixed">
+      <nav class="blue accent-3">
+        <div class="nav-wrapper">
+          <!-- Filters issues based on search keywords -->
+          <div class="left">
+            <form>
+              <div class="input-field">
+                <input id="search" type="search" required>
+                <label for="search"><i class="material-icons">search</i></label>
+              </div>
+            </form>
+          </div>
+          <!-- Link to github issues for Angular -->
+          <a href="#!" class="brand-logo center">Angular Issues</a>
+          <!-- Table selectors -->
+          <ul class="right">
+            <li class="active"><a href="#">Milestones</a></li>
+            <li><a href="#">Hotlist</a></li>
+            <li><a href="#">Backlog</a></li>
+            <li><a href="#">Triage</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <milestones>Loading...</milestones>
+      <hotlist>Loading...</hotlist>
+      <backlog>Loading...</backlog>
+      <triage>Loading...</triage>
+    </div>
+
     <script>
       System.config({
         baseURL: "/dist"
