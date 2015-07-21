@@ -10,9 +10,5 @@
         "outDir": "./dist/",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
-    },
-    "files": [
-      "typings/angular2/angular2.d.ts",
-      "app.ts"
-    ]
+    }
 }

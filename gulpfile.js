@@ -9,9 +9,7 @@ var gulpTsc = require('gulp-typescript');
 // config
 
 // Sets typescript compilation options using tsconfig.json.
-var tsProject = gulpTsc.createProject('./tsconfig.json', {
-    typescript: require('typescript')
-  });
+var tsProject = gulpTsc.createProject('./tsconfig.json');
   
 
 // ==========
@@ -38,7 +36,7 @@ gulp.task('!clean', function() {
  * Transcompile all TypeScript code to JavaScript.
  */
 gulp.task('build', ['!clean'], function() {
-  var tsResult = gulp.src(['app.ts', 'components/**/*.ts']).pipe(gulpTsc(tsProject));
+  var tsResult = gulp.src(['./**/*.ts', '!./node_modules/**']).pipe(gulpTsc(tsProject));
   return tsResult.js.pipe(gulp.dest(tsProject.options.outDir));
 });
 
