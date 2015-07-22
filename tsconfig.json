@@ -7,7 +7,7 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "sourceRoot": ".",
-        "outDir": "./dist/",
+        "outDir": "./build",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
     }

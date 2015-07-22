@@ -2,7 +2,7 @@
   "name": "npm",
   "version": "0.0.1",
   "description": "An application to the help the Angular team stay organized as they tackle incoming issues.",
-  "main": "dist/app.js",
+  "main": "build/components/app/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

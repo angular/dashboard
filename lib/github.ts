@@ -43,7 +43,6 @@ export class Github {
 
   private _fetchPage(page: number): Observable<Issue> {
     return Observable.create<Issue>((observer: Rx.Observer<Issue>) => {
-      console.log('page fetch');
       var http = new XMLHttpRequest();
 
       var url = this._buildUrl(`/repos/${this.owner}/${this.repository}/issues`, {
@@ -51,6 +50,7 @@ export class Github {
           page: page
         });
       http.open("GET", url, true);
+      console.log('requested issues page', page, 'from github!');
 
       http.onreadystatechange = () => {
         var response = http.responseText;

@@ -29,7 +29,7 @@ gulp.task('check-format', function() {
 // compile
 
 gulp.task('!clean', function() {
-  return gulp.src('./dist', {read: false}).pipe(gulpClean());
+  return gulp.src('./build', {read: false}).pipe(gulpClean());
 });
 
 /**
