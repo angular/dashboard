@@ -19,19 +19,19 @@
       <a href="#!" class="brand-logo center">Angular Issues</a>
       <!-- Table selectors -->
       <ul class="right">
-        <li class="active"><a href="#">Milestones</a></li>
-        <li><a href="#">Hotlist</a></li>
-        <li><a href="#">Backlog</a></li>
-        <li><a href="#">Triage</a></li>
+        <li [class.active]="activeTable == 'milestones'"><a (click)="setActive('milestones')">Milestones</a></li>
+        <li [class.active]="activeTable == 'hotlist'"><a (click)="setActive('hotlist')">Hotlist</a></li>
+        <li [class.active]="activeTable == 'backlog'"><a (click)="setActive('backlog')">Backlog</a></li>
+        <li [class.active]="activeTable == 'triage'"><a (click)="setActive('triage')">Triage</a></li>
       </ul>
     </div>
   </nav>
 </div>
 
 <div class="container">
-  <milestones>Loading...</milestones>
-  <hotlist>Loading...</hotlist>
-  <backlog>Loading...</backlog>
-  <triage>Loading...</triage>
+  <milestones [class.hide]="activeTable != 'milestones'"></milestones>
+  <hotlist [class.hide]="activeTable != 'hotlist'"></hotlist>
+  <backlog [class.hide]="activeTable != 'backlog'"></backlog>
+  <triage [class.hide]="activeTable != 'triage'"></triage>
 </div>
 

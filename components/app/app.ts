@@ -12,7 +12,13 @@ import {Triage} from '../triage/triage';
   templateUrl: 'components/app/app.html'
 })
 class App {
+  activeTable: string = 'milestones';
+
   constructor() {}
+
+  setActive(table: string): void {
+    if (this.activeTable != table) { this.activeTable = table; }
+  }
 }
 
 bootstrap(App);
