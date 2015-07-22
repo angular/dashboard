@@ -1,13 +1,15 @@
 /// <reference path="../../typings/angular2/angular2.d.ts" />
 import {Component, View} from 'angular2/angular2';
+import {Github} from '../../lib/github';
 
 @Component({
-  selector: 'triage'
+  selector: 'triage',
+  appInjector: [Github]
 })
 @View({
   templateUrl: 'components/triage/triage.html'
 })
 export class Triage {
-  constructor() {}
+  constructor(github: Github) {}
 }
 
