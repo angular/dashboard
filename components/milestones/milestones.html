@@ -14,7 +14,7 @@
           <tr>
             
             <td *ng-for="#assignee of assignees"> <!-- one for every assignee -->
-              <table class="hoverable">
+              <table class="bordered" [class.hoverable]="hasIssue(milestone, assignee)">
                 <thead>
                   <tr>
                     <th>
@@ -25,8 +25,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>  <!-- one for every issue -->
-                    <td><a href="#">Issue</a></td>
+                  <tr *ng-for="#issue of issues[milestone.title][assignee.login]">  <!-- one for every issue -->
+                    <td><a *ng-if="issue" [href]="issue.html_url">{{ issue.number }}</a><a *ng-if="!issue">&nbsp;</a></td>
                   </tr>
                 </tbody>
               </table>
