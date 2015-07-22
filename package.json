@@ -20,7 +20,9 @@
     "url": "https://github.com/ttowncompiled/AngularDashboard/issues"
   },
   "homepage": "https://github.com/ttowncompiled/AngularDashboard#readme",
-  "dependencies": {},
+  "dependencies": {
+    "rx": "^2.5.3"
+  },
   "devDependencies": {
     "clang-format": "^1.0.28",
     "gulp": "^3.9.0",

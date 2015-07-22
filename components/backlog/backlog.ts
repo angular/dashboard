@@ -10,6 +10,6 @@ import {Github} from '../../lib/github';
   templateUrl: 'components/backlog/backlog.html'
 })
 export class Backlog {
-  constructor(github: Github) {}
+  constructor(private _github: Github) {}
 }
 
