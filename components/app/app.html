@@ -30,10 +30,7 @@
   </nav>
 </div>
 
-<div class="container">
-  <milestones [class.hide]="activeTable != 'milestones'"></milestones>
-  <hotlist [class.hide]="activeTable != 'hotlist'"></hotlist>
-  <backlog [class.hide]="activeTable != 'backlog'"></backlog>
-  <triage [class.hide]="activeTable != 'triage'"></triage>
-</div>
-
+<milestones [class.hide]="activeTable != 'milestones'"></milestones>
+<hotlist [class.hide]="activeTable != 'hotlist'"></hotlist>
+<backlog [class.hide]="activeTable != 'backlog'"></backlog>
+<triage [class.hide]="activeTable != 'triage'"></triage>

@@ -9,15 +9,15 @@
   <div *ng-for="#milestone of milestones"> <!-- one for every milestone -->
     <li class="collection-header"><h5>{{ milestone.title }}</h5></li>
     <li class="collection-item">
-      <table class="centered">
+      <table class="center">
         <tbody>
           <tr>
             
-            <td *ng-for="#assignee of assignees[milestone.title]"> <!-- one for every assignee -->
+            <td *ng-for="#assignee of assignees"> <!-- one for every assignee -->
               <table class="hoverable">
                 <thead>
                   <tr>
-                    <th class="center">
+                    <th>
                       <a href="https://github.com/angular/angular/issues?q=is%3Aopen+assignee%3A{{ assignee.login }}">
                         <img width="60" height="60" [src]="assignee.avatar_url" title="{{ assignee.login }}" />
                       </a>
@@ -25,8 +25,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ng-for="#issue of issues[assignee.login]">  <!-- one for every issue -->
-                    <td><a href="{{ issue.html_url }}">{{ issue.number }}</a></td>
+                  <tr>  <!-- one for every issue -->
+                    <td><a href="#">Issue</a></td>
                   </tr>
                 </tbody>
               </table>
