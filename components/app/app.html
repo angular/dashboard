@@ -16,10 +16,10 @@
         </form>
       </div>
       <!-- Link to github issues for Angular -->
-      <a href="#!" class="brand-logo center">Angular Issues</a>
+      <a href="https://github.com/angular/angular/issues" class="brand-logo center">Angular Issues</a>
       <!-- Table selectors -->
       <ul class="right">
-        <li *ng-if="github.isAuthenticated"><a href="#!"><i class="material-icons right">verified_user</i>{{ username }}</a></li>
+        <li *ng-if="github.isAuthenticated"><a href="https://github.com/{{ username }}"><i class="material-icons right">verified_user</i>{{ username }}</a></li>
         <li *ng-if="!github.isAuthenticated"><a (click)="github.authenticate()"><i class="material-icons right">perm_identity</i>Log in</a></li>
         <li [class.active]="activeTable == 'milestones'"><a (click)="setActive('milestones')">Milestones</a></li>
         <li [class.active]="activeTable == 'hotlist'"><a (click)="setActive('hotlist')">Hotlist</a></li>

@@ -3,11 +3,11 @@
   @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 </style>
 
-<h4 class="title center">Milestones</h4>
+<a href="https://github.com/angular/angular/milestones"><h4 class="title center black-text">Milestones</h4></a>
 <ul class="collection with-header">
   
   <div *ng-for="#milestone of milestones"> <!-- one for every milestone -->
-    <li class="collection-header"><h5>{{ milestone.title }}</h5></li>
+    <li class="collection-header"><a href="https://github.com/angular/angular/milestones/{{ milestone.title }}"><h5 class="black-text">{{ milestone.title }}</h5></a></li>
     <li class="collection-item">
       <table class="center">
         <tbody>
