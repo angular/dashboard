@@ -66,6 +66,12 @@ export class Milestones {
             if (a.priority == b.priority) {
               return (a.number == b.number) ? 0 : (a.number > b.number) ? 1 : -1;
             }
+            if (a.priority == -1) {
+              return 1;
+            }
+            if (b.priority == -1) {
+              return -1;
+            }
             return (a.priority > b.priority) ? 1 : -1;
           }));
         })
