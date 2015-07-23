@@ -15,6 +15,10 @@ export class Milestones {
   assignees: User[];
   issues: {[title: string]: {[login: string]: AngularIssue[]}};
   
+  pages: Page[] = [];
+  pageLimit: number = 12;
+  activePage: number = 0;
+  
   constructor(private _github: Github) {
     this._populate();
   }
@@ -24,6 +28,26 @@ export class Milestones {
       return false;
     }
     return !!this.issues[milestone.title][assignee.login][0];
+  }
+  
+  hasNextPage(): boolean {
+    return this.activePage < this.pages.length-1;
+  }
+  
+  hasPrevPage(): boolean {
+    return this.activePage > 0;
+  }
+  
+  nextPage(): void {
+    if (this.hasNextPage()) {
+      this.activePage++;
+    }
+  }
+  
+  prevPage(): void {
+    if (this.hasPrevPage()) {
+      this.activePage--;
+    }
   }
 
   private _populate(): void {
@@ -102,16 +126,35 @@ export class Milestones {
         // wait for all milestones to be processed
         .toArray()
         .subscribeOnNext((milestones: Milestone[]) => {
+          
           // sort assignees alphanumerically
           this.assignees = assignees.sort((a: User, b: User) => {
             return (a.login == b.login) ? 0 : (a.login > b.login) ? 1 : -1;
           });
+          
+          // place each assignee on a page
+          var pages: Page[] = [];
+          for (var page: number = 0; page * this.pageLimit < this.assignees.length; page++) {
+            pages.push({number: page, assignees: []});
+            for (var offset: number = 0; page * this.pageLimit + offset < this.assignees.length
+                && offset < this.pageLimit; offset++) {
+              pages[page].assignees.push(this.assignees[page * this.pageLimit + offset]);
+            }
+          }
+          this.pages = pages;
+          
           // sort milestones alphanumberically
           this.milestones = milestones.sort((a: Milestone, b: Milestone) => {
             return (a.title == b.title) ? 0: (a.title > b.title) ? 1 : -1;
           });
+          
           this.issues = issues;
         });
   }
 
+}
+
+export interface Page {
+  number: number;
+  assignees: User[];
 }
