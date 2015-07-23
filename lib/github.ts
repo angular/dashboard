@@ -57,10 +57,18 @@ export class Github {
         if (http.readyState == 4) {
           if (http.status == 200) {
             var issues: Array<Issue> = JSON.parse(response);
-            if (issues.length == 100) { this._fetchPage(page + 1).subscribe(observer); }
-            Observable.from<Issue>(issues)
-                .map((issue: Issue) => this._transformIssue(issue))
-                .subscribe(observer);
+            if (issues.length >= 100) {
+              this._fetchPage(page + 1)
+                  .merge(
+                      Observable.from<Issue>(issues)
+                      .map((issue: Issue) => this._transformIssue(issue))
+                   )
+                  .subscribe(observer);
+            } else {
+              Observable.from<Issue>(issues)
+                  .map((issue: Issue) => this._transformIssue(issue))
+                  .subscribe(observer);
+            }
           } else { observer.onError(response); }
         }
       };
