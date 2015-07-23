@@ -19,7 +19,7 @@ var tsProject = gulpTsc.createProject('./tsconfig.json');
  * Checks that all files in modules match the format specified in .clang-format.
  */
 gulp.task('check-format', function() {
-  return gulp.src('./modules/**/*.ts')
+  return gulp.src(['./components/**/*.ts', './lib/**/*.ts'])
     .pipe(format.checkFormat('file'))
     .on('warning', function(e) { process.stdout.write(e.message); process.exit(1) });
 });
@@ -36,7 +36,7 @@ gulp.task('!clean', function() {
  * Transcompile all TypeScript code to JavaScript.
  */
 gulp.task('build', ['!clean'], function() {
-  var tsResult = gulp.src(['./**/*.ts', '!./node_modules/**']).pipe(gulpTsc(tsProject));
+  var tsResult = gulp.src(['./components/**/*.ts', './lib/**/*.ts']).pipe(gulpTsc(tsProject));
   return tsResult.js.pipe(gulp.dest(tsProject.options.outDir));
 });
 

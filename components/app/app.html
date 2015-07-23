@@ -9,8 +9,8 @@
       <!-- Filters issues based on search keywords -->
       <div class="left">
         <form>
-          <div class="input-field">
-            <input id="search" type="search" required>
+          <div class="hoverable input-field">
+            <input id="search" type="search" value="Out sick today!" required />
             <label for="search"><i class="material-icons">search</i></label>
           </div>
         </form>
@@ -84,6 +84,15 @@
     </table>
   </div>
 </div>
+
+<!-- Component Title -->
+<h4 class="center">
+  <a href="https://github.com/angular/angular/milestones">
+    <span class="title black-text">{{ toCapitalCase(activeTable) }}</span>
+  </a>
+</h4>
+
+<div class="divider"></div>
 
 <milestones [class.hide]="activeTable != 'milestones'"></milestones>
 <hotlist [class.hide]="activeTable != 'hotlist'"></hotlist>
