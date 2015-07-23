@@ -28,38 +28,82 @@
                   <tr *ng-for="#issue of issues[milestone.title][assignee.login]">  <!-- one for every issue -->
                     <td>
                       <a *ng-if="issue" [href]="issue.html_url">
-                        <div [ng-switch]="issue.priority">
-                          <span template="ng-switch-when 0" class="red-text text-accent-3">P0: {{ issue.number }}</span>
-                          <span template="ng-switch-when 1" class="red-text">P1: {{ issue.number }}</span>
-                          <span template="ng-switch-when 2" class="orange-text">P2: {{ issue.number }}</span>
-                          <span template="ng-switch-when 3" class="amber-text">P3: {{ issue.number }}</span>
-                          <span template="ng-switch-when 4" class="yellow-text">P4: {{ issue.number }}</span>
-                          <span template="ng-switch-default">NP: {{ issue.number }}</span>
+                        <!-- Issue number -->
+                        <div *ng-if="!issue.pr_state && !issue.state">
+                          <div [ng-switch]="issue.priority">
+                            <span template="ng-switch-when 0" class="red-text text-accent-3">P0: {{ issue.number }}</span>
+                            <span template="ng-switch-when 1" class="red-text">P1: {{ issue.number }}</span>
+                            <span template="ng-switch-when 2" class="orange-text">P2: {{ issue.number }}</span>
+                            <span template="ng-switch-when 3" class="amber-text">P3: {{ issue.number }}</span>
+                            <span template="ng-switch-when 4" class="yellow-text">P4: {{ issue.number }}</span>
+                            <span template="ng-switch-default">NP: {{ issue.number }}</span>
+                          </div>
                         </div>
+                        <div *ng-if="issue.pr_state">
+                          <div [ng-switch]="issue.pr_state">
+                            <div template="ng-switch-when 'blocked'">
+                              <span *ng-if="issue.priority >= 0" class="grey-text text-darken-3">P{{ issue.priority }}: {{ issue.number }}</span>
+                              <span *ng-if="issue.priority < 0" class="grey-text text-darken-3">NP: {{ issue.number }}</span>
+                            </div>
+                            <div template="ng-switch-when 'LGTM'">
+                              <span *ng-if="issue.priority >= 0" class="green-text text-accent-3">P{{ issue.priority }}: {{ issue.number }}</span>
+                              <span *ng-if="issue.priority < 0" class="green-text text-accent-3">NP: {{ issue.number }}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ng-if="!issue.pr_state && issue.state">
+                          <div [ng-switch]="issue.state">
+                            <div template="ng-switch-when 'Blocked'">
+                              <span *ng-if="issue.priority >= 0" class="grey-text text-darken-3">P{{ issue.priority }}: {{ issue.number }}</span>
+                              <span *ng-if="issue.priority < 0" class="grey-text text-darken-3">NP: {{ issue.number }}</span>
+                            </div>
+                            <div template="ng-switch-when 'PR'">
+                              <span *ng-if="issue.priority >= 0" class="green-text text-accent-3">P{{ issue.priority }}: {{ issue.number }}</span>
+                              <span *ng-if="issue.priority < 0" class="green-text text-accent-3">NP: {{ issue.number }}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Issue type -->
                         <div [ng-switch]="issue.type">
                           <i template="ng-switch-when 'bug'" class="material-icons tiny">report_problem</i>
                           <i template="ng-switch-when 'chore'" class="material-icons tiny">assignment</i>
-                          <i template="ng-switch-when 'feature'" class="material-icons tiny">launch</i>
+                          <i template="ng-switch-when 'feature'" class="material-icons tiny">library_add</i>
                           <i template="ng-switch-when 'performance'" class="material-icons tiny">assessment</i>
                           <i template="ng-switch-when 'refactor'" class="material-icons tiny">spellcheck</i>
                           <i template="ng-switch-when 'RFC / discussion / question'" class="material-icons tiny">info</i>
                           <br template="ng-switch-default">
                         </div>
-                        <div [ng-switch]="issue.effort">
-                          <div template="ng-switch-when 1">
-                            <i class="material-icons tiny">business</i>
+                        <!-- Issue state -->
+                        <div *ng-if="!issue.pr_state && !issue.state">
+                          <div [ng-switch]="issue.effort">
+                            <div template="ng-switch-when 1">
+                              <i class="material-icons tiny">grade</i>
+                            </div>
+                            <div template="ng-switch-when 2">
+                              <i class="material-icons tiny">grade</i>
+                              <i class="material-icons tiny">grade</i>
+                            </div>
+                            <div template="ng-switch-when 3">
+                              <i class="material-icons tiny">grade</i>
+                              <i class="material-icons tiny">grade</i>
+                              <i class="material-icons tiny">grade</i>
+                            </div>
+                            <br template="ng-switch-default">
                           </div>
-                          <div template="ng-switch-when 2">
-                            <i class="material-icons tiny">business</i>
-                            <i class="material-icons tiny">business</i>
-                          </div>
-                          <div template="ng-switch-when 3">
-                            <i class="material-icons tiny">business</i>
-                            <i class="material-icons tiny">business</i>
-                            <i class="material-icons tiny">business</i>
-                          </div>
-                          <br template="ng-switch-default">
                         </div>
+                        <div *ng-if="issue.pr_state">
+                          <div [ng-switch]="issue.pr_state">
+                            <i template="ng-switch-when 'blocked'" class="material-icons tiny">lock</i>
+                            <i template="ng-switch-when 'LGTM'" class="material-icons tiny">thumb_up</i>
+                          </div>
+                        </div>
+                        <div *ng-if="!issue.pr_state && issue.state">
+                          <div [ng-switch]="issue.state">
+                            <i template="ng-switch-when 'Blocked'" class="material-icons tiny">lock</i>
+                            <i template="ng-switch-when 'PR'" class="material-icons tiny">trending_up</i>
+                          </div>
+                        </div>
+                        
                       </a>
                       <a *ng-if="!issue"><br><br><br></a>
                     </td>

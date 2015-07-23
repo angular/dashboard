@@ -74,11 +74,17 @@ export class Github {
       if (/^P\d/.test(label.name)) { // apply priority
         angular.priority = parseInt(label.name[1]);
       } else if (/^type/.test(label.name)) { // apply type
-        angular.type = label.name.replace(/^type: /, '');
+        angular.type = label.name.replace(/^type:/, '').trim();
       } else if (/^effort/.test(label.name)) { // apply effort
         if (/easy/.test(label.name)) angular.effort = 1;
         else if (/medium/.test(label.name)) angular.effort = 2;
         else if (/hard/.test(label.name)) angular.effort = 3;
+      } else if (/^pr_state/.test(label.name)) { // apply pr_state
+        var pr_state: string = label.name.replace(/^pr_state:/, '').trim();
+        if (pr_state == 'blocked' || pr_state == 'LGTM') angular.pr_state = pr_state;
+      } else if (/^state/.test(label.name)) { // apply state
+        var state: string = label.name.replace(/^state:/, '').trim();
+        if (state == 'Blocked' || state == 'PR') angular.state = state;
       }
     });
   }
@@ -91,6 +97,8 @@ export class Github {
         milestone: issue.milestone,
         number: issue.number,
         priority: -1,
+        pr_state: '',
+        state: '',
         type: ''
     };
     this._applyLabels(issue, angularIssue);
@@ -106,5 +114,7 @@ export interface AngularIssue {
   milestone: Milestone;
   number: number;
   priority: number;
+  pr_state: string;
+  state: string;
   type: string;
 }
