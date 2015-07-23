@@ -20,14 +20,8 @@ class App {
   constructor(private _github: Github) {}
 
   get username(): string { return this._github.username; }
-
-  authenticate(): void {
-    this._github.authenticate();
-  }
-
-  isAuthenticated(): boolean {
-    return this._github.isAuthenticated;
-  }
+  
+  get github(): Github { return this._github; }
 
   setActive(table: string): void {
     if (this.activeTable != table) { this.activeTable = table; }
