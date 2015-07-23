@@ -29,6 +29,7 @@
                   <tr *ng-for="#issue of issues[milestone.title][assignee.login]">  <!-- one for every issue -->
                     <td>
                       <a *ng-if="issue" [href]="issue.html_url">
+                        
                         <!-- Issue number -->
                         <div *ng-if="!issue.pr_state && !issue.state">
                           <div [ng-switch]="issue.priority">
@@ -64,16 +65,7 @@
                             </div>
                           </div>
                         </div>
-                        <!-- Issue type -->
-                        <div [ng-switch]="issue.type">
-                          <i template="ng-switch-when 'bug'" class="material-icons tiny">report_problem</i>
-                          <i template="ng-switch-when 'chore'" class="material-icons tiny">assignment</i>
-                          <i template="ng-switch-when 'feature'" class="material-icons tiny">library_add</i>
-                          <i template="ng-switch-when 'performance'" class="material-icons tiny">assessment</i>
-                          <i template="ng-switch-when 'refactor'" class="material-icons tiny">spellcheck</i>
-                          <i template="ng-switch-when 'RFC / discussion / question'" class="material-icons tiny">info</i>
-                          <br template="ng-switch-default">
-                        </div>
+                        
                         <!-- Issue state -->
                         <div *ng-if="!issue.pr_state && !issue.state">
                           <div [ng-switch]="issue.effort">
@@ -103,6 +95,17 @@
                             <i template="ng-switch-when 'Blocked'" class="material-icons tiny">lock</i>
                             <i template="ng-switch-when 'PR'" class="material-icons tiny">trending_up</i>
                           </div>
+                        </div>
+                        
+                        <!-- Issue type -->
+                        <div [ng-switch]="issue.type">
+                          <i template="ng-switch-when 'bug'" class="material-icons tiny">report_problem</i>
+                          <i template="ng-switch-when 'chore'" class="material-icons tiny">assignment</i>
+                          <i template="ng-switch-when 'feature'" class="material-icons tiny">library_add</i>
+                          <i template="ng-switch-when 'performance'" class="material-icons tiny">assessment</i>
+                          <i template="ng-switch-when 'refactor'" class="material-icons tiny">spellcheck</i>
+                          <i template="ng-switch-when 'RFC / discussion / question'" class="material-icons tiny">info</i>
+                          <br template="ng-switch-default">
                         </div>
                         
                       </a>
