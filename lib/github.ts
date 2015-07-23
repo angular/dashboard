@@ -71,9 +71,10 @@ export class Github {
   
   private _applyLabels(issue: Issue, angular: AngularIssue): void {
     issue.labels.forEach((label: Label) => {
-      // apply priority
-      if (/^P\d/.test(label.name)) {
+      if (/^P\d/.test(label.name)) { // apply priority
         angular.priority = parseInt(label.name[1]);
+      } else if (/^type/.test(label.name)) { // apply type
+        angular.type = label.name.replace(/^type: /, '');
       }
     });
   }
@@ -84,7 +85,8 @@ export class Github {
         html_url: issue.html_url,
         milestone: issue.milestone,
         number: issue.number,
-        priority: -1
+        priority: -1,
+        type: ''
     };
     this._applyLabels(issue, angularIssue);
     return angularIssue;
@@ -98,4 +100,5 @@ export interface AngularIssue {
   milestone: Milestone;
   number: number;
   priority: number;
+  type: string;
 }

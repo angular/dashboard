@@ -36,8 +36,17 @@
                           <span template="ng-switch-when 4" class="yellow-text">P4: {{ issue.number }}</span>
                           <span template="ng-switch-default">NP: {{ issue.number }}</span>
                         </div>
+                        <div [ng-switch]="issue.type">
+                          <i template="ng-switch-when 'bug'" class="material-icons tiny">report_problem</i>
+                          <i template="ng-switch-when 'chore'" class="material-icons tiny">assignment</i>
+                          <i template="ng-switch-when 'feature'" class="material-icons tiny">launch</i>
+                          <i template="ng-switch-when 'performance'" class="material-icons tiny">assessment</i>
+                          <i template="ng-switch-when 'refactor'" class="material-icons tiny">spellcheck</i>
+                          <i template="ng-switch-when 'RFC / discussion / question'" class="material-icons tiny">info</i>
+                          <br template="ng-switch-default">
+                        </div>
                       </a>
-                      <a *ng-if="!issue">&nbsp;</a>
+                      <a *ng-if="!issue"><br><br></a>
                     </td>
                   </tr>
                 </tbody>
