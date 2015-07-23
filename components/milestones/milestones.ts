@@ -39,7 +39,10 @@ export class Milestones {
         // sort issues
         .flatMap((issues: AngularIssue[]) => {
           return Observable.from<AngularIssue>(issues.sort((a: AngularIssue, b: AngularIssue) => {
-            return (a.number == b.number) ? 0 : (a.number > b.number) ? 1 : -1;
+            if (a.priority == b.priority) {
+              return (a.number == b.number) ? 0 : (a.number > b.number) ? 1 : -1;
+            }
+            return (a.priority > b.priority) ? 1 : -1;
           }));
         })
         // milestones page is only for issues with a milestone or an assignee
