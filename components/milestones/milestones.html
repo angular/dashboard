@@ -17,9 +17,10 @@
               <table class="bordered" [class.hoverable]="hasIssue(milestone, assignee)">
                 <thead>
                   <tr>
-                    <th>
+                    <th class="center">
                       <a href="https://github.com/angular/angular/issues?q=is%3Aopen+assignee%3A{{ assignee.login }}">
-                        <img width="60" height="60" [src]="assignee.avatar_url" title="{{ assignee.login }}" />
+                        <img width="60" height="60" class="circle" [src]="assignee.avatar_url" title="{{ assignee.login }}" />
+                        <span class="grey-text text-darken-4">{{ assignee.login }}</span>
                       </a>
                     </th>
                   </tr>
