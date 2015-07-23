@@ -1,19 +1,19 @@
 /// <reference path="../../typings/angular2/angular2.d.ts" />
-import {Component, NgFor, NgIf, View} from 'angular2/angular2';
+import {Component, NgFor, NgIf, NgSwitch, NgSwitchDefault, NgSwitchWhen, View} from 'angular2/angular2';
 import {Observable, Observer} from 'rx';
-import {Github} from '../../lib/github';
+import {AngularIssue, Github} from '../../lib/github';
 
 @Component({
   selector: 'milestones'
 })
 @View({
   templateUrl: 'components/milestones/milestones.html',
-  directives: [NgFor, NgIf]
+  directives: [NgFor, NgIf, NgSwitch, NgSwitchDefault, NgSwitchWhen]
 })
 export class Milestones {
   milestones: Milestone[] = [];
   assignees: User[];
-  issues: {[title: string]: {[login: string]: Issue[]}};
+  issues: {[title: string]: {[login: string]: AngularIssue[]}};
   
   constructor(private _github: Github) {
     this._populate();
@@ -31,21 +31,21 @@ export class Milestones {
     var milestoneSet = {};
     var assignees: User[] = [];
     var issueCount: {[title: string]: number} = {};
-    var issues: {[title: string]: {[login: string]: Issue[]}} = {};
+    var issues: {[title: string]: {[login: string]: AngularIssue[]}} = {};
     
     this._github.issues
         // complete the observable sequence provided by github issues
         .take(1)
         // sort issues
-        .flatMap((issues: Issue[]) => {
-          return Observable.from<Issue>(issues.sort((a: Issue, b: Issue) => {
+        .flatMap((issues: AngularIssue[]) => {
+          return Observable.from<AngularIssue>(issues.sort((a: AngularIssue, b: AngularIssue) => {
             return (a.number == b.number) ? 0 : (a.number > b.number) ? 1 : -1;
           }));
         })
         // milestones page is only for issues with a milestone or an assignee
-        .filter((issue: Issue) => !!(issue.milestone) && !!(issue.assignee))
+        .filter((issue: AngularIssue) => !!(issue.milestone) && !!(issue.assignee))
         // map each issue to its respective milestone and assignee
-        .map((issue: Issue) => {
+        .map((issue: AngularIssue) => {
           var title: string = issue.milestone.title;
           var login: string = issue.assignee.login;
           if (!issues.hasOwnProperty(title)) {
@@ -62,7 +62,7 @@ export class Milestones {
           return issue;
         })
         // create a unique list of assignees
-        .map((issue: Issue) => {
+        .map((issue: AngularIssue) => {
           if (!assigneeSet.hasOwnProperty(issue.assignee.login)) {
             assignees.push(issue.assignee);
             assigneeSet[issue.assignee.login] = issue.assignee;
@@ -70,7 +70,7 @@ export class Milestones {
           return issue;
         })
         // transform each issue to its respective milestone
-        .map((issue: Issue) => issue.milestone)
+        .map((issue: AngularIssue) => issue.milestone)
         // remove duplicate milestones
         .filter((milestone: Milestone) => !milestoneSet.hasOwnProperty(milestone.title))
         // mark unique milestones to filter out future duplicates

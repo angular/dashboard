@@ -26,7 +26,19 @@
                 </thead>
                 <tbody>
                   <tr *ng-for="#issue of issues[milestone.title][assignee.login]">  <!-- one for every issue -->
-                    <td><a *ng-if="issue" [href]="issue.html_url">{{ issue.number }}</a><a *ng-if="!issue">&nbsp;</a></td>
+                    <td>
+                      <a *ng-if="issue" [href]="issue.html_url">
+                        <div [ng-switch]="issue.priority">
+                          <span template="ng-switch-when 0" class="red-text text-accent-3">P0: {{ issue.number }}</span>
+                          <span template="ng-switch-when 1" class="red-text">P1: {{ issue.number }}</span>
+                          <span template="ng-switch-when 2" class="orange-text">P2: {{ issue.number }}</span>
+                          <span template="ng-switch-when 3" class="amber-text">P3: {{ issue.number }}</span>
+                          <span template="ng-switch-when 4" class="yellow-text">P4: {{ issue.number }}</span>
+                          <span template="ng-switch-default">NP: {{ issue.number }}</span>
+                        </div>
+                      </a>
+                      <a *ng-if="!issue">&nbsp;</a>
+                    </td>
                   </tr>
                 </tbody>
               </table>

@@ -6,14 +6,14 @@ import {Observable, Subject} from 'rx';
 declare var Firebase;
 
 export class Github {
-  private _issues: Subject<Issue[]>;
+  private _issues: Subject<AngularIssue[]>;
   private _ref = new Firebase("https://ng2-projects.firebaseio.com");
 
   constructor(public owner: string, public repository: string) {}
 
   get isAuthenticated(): boolean { return !!(this._ref.getAuth()); }
 
-  get issues(): Observable<Issue[]> {
+  get issues(): Observable<AngularIssue[]> {
     if (!this._issues) { this.refresh(); }
     return this._issues;
   }
@@ -28,10 +28,10 @@ export class Github {
   }
   
   refresh(): void {
-    if (!this._issues) { this._issues = new Subject<Issue[]>(); }
+    if (!this._issues) { this._issues = new Subject<AngularIssue[]>(); }
     this._fetchPage(0)
         .toArray()
-        .subscribe((issues: Issue[]) => this._issues.onNext(issues),
+        .subscribe((issues: AngularIssue[]) => this._issues.onNext(issues),
             (error: any) => this._issues.onError(error));
   }
 
@@ -41,8 +41,8 @@ export class Github {
     return `https://api.github.com${path}?${arr.join('&')}`;
   }
 
-  private _fetchPage(page: number): Observable<Issue> {
-    return Observable.create<Issue>((observer: Rx.Observer<Issue>) => {
+  private _fetchPage(page: number): Observable<AngularIssue> {
+    return Observable.create<AngularIssue>((observer: Rx.Observer<AngularIssue>) => {
       var http = new XMLHttpRequest();
 
       var url = this._buildUrl(`/repos/${this.owner}/${this.repository}/issues`, {
@@ -58,7 +58,9 @@ export class Github {
           if (http.status == 200) {
             var issues: Array<Issue> = JSON.parse(response);
             if (issues.length == 100) { this._fetchPage(page + 1).subscribe(observer); }
-            Observable.from<Issue>(issues).subscribe(observer);
+            Observable.from<Issue>(issues)
+                .map((issue: Issue) => this._transformIssue(issue))
+                .subscribe(observer);
           } else { observer.onError(response); }
         }
       };
@@ -66,6 +68,34 @@ export class Github {
       http.send();
     });
   }
+  
+  private _applyLabels(issue: Issue, angular: AngularIssue): void {
+    issue.labels.forEach((label: Label) => {
+      // apply priority
+      if (/^P\d/.test(label.name)) {
+        angular.priority = parseInt(label.name[1]);
+      }
+    });
+  }
+  
+  private _transformIssue(issue: Issue): AngularIssue {
+    var angularIssue: AngularIssue = {
+        assignee: issue.assignee,
+        html_url: issue.html_url,
+        milestone: issue.milestone,
+        number: issue.number,
+        priority: -1
+    };
+    this._applyLabels(issue, angularIssue);
+    return angularIssue;
+  }
 
 }
 
+export interface AngularIssue {
+  assignee: User;
+  html_url: string;
+  milestone: Milestone;
+  number: number;
+  priority: number;
+}
