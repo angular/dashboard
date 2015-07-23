@@ -75,6 +75,10 @@ export class Github {
         angular.priority = parseInt(label.name[1]);
       } else if (/^type/.test(label.name)) { // apply type
         angular.type = label.name.replace(/^type: /, '');
+      } else if (/^effort/.test(label.name)) { // apply effort
+        if (/easy/.test(label.name)) angular.effort = 1;
+        else if (/medium/.test(label.name)) angular.effort = 2;
+        else if (/hard/.test(label.name)) angular.effort = 3;
       }
     });
   }
@@ -82,6 +86,7 @@ export class Github {
   private _transformIssue(issue: Issue): AngularIssue {
     var angularIssue: AngularIssue = {
         assignee: issue.assignee,
+        effort: -1,
         html_url: issue.html_url,
         milestone: issue.milestone,
         number: issue.number,
@@ -96,6 +101,7 @@ export class Github {
 
 export interface AngularIssue {
   assignee: User;
+  effort: number;
   html_url: string;
   milestone: Milestone;
   number: number;

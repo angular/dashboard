@@ -45,8 +45,23 @@
                           <i template="ng-switch-when 'RFC / discussion / question'" class="material-icons tiny">info</i>
                           <br template="ng-switch-default">
                         </div>
+                        <div [ng-switch]="issue.effort">
+                          <div template="ng-switch-when 1">
+                            <i class="material-icons tiny">business</i>
+                          </div>
+                          <div template="ng-switch-when 2">
+                            <i class="material-icons tiny">business</i>
+                            <i class="material-icons tiny">business</i>
+                          </div>
+                          <div template="ng-switch-when 3">
+                            <i class="material-icons tiny">business</i>
+                            <i class="material-icons tiny">business</i>
+                            <i class="material-icons tiny">business</i>
+                          </div>
+                          <br template="ng-switch-default">
+                        </div>
                       </a>
-                      <a *ng-if="!issue"><br><br></a>
+                      <a *ng-if="!issue"><br><br><br></a>
                     </td>
                   </tr>
                 </tbody>
