@@ -20,7 +20,9 @@ export class Github {
     return this._issues;
   }
 
-  get username(): string { return this._ref.getAuth().github.username; }
+  get username(): string {
+    return (this.isAuthenticated) ? this._ref.getAuth().github.username : '';
+  }
 
   authenticate(): void {
     this._ref.authWithOAuthPopup("github", (error: any, authData: any) => {
@@ -28,6 +30,7 @@ export class Github {
         console.error(error);
       } else {
         console.log("Authenticated successfully!", authData);
+        this.refresh();
       }
     });
   }
