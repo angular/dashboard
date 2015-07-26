@@ -1,15 +1,15 @@
 /// <reference path="../../typings/angular2/angular2.d.ts" />
 import {bind, bootstrap, Component, NgIf, View} from 'angular2/angular2';
-import {Milestones} from '../milestones/milestones';
-import {Hotlist} from '../hotlist/hotlist';
+import {Assigned} from '../assigned/assigned';
 import {Backlog} from '../backlog/backlog';
-import {Triage} from '../triage/triage';
 import {Github} from '../../lib/github';
+import {Hotlist} from '../hotlist/hotlist';
+import {Triage} from '../triage/triage';
 
 @Component({selector : 'app', appInjector : [ Github ]})
 @View({templateUrl : 'components/app/app.html', directives : [ NgIf ]})
 class App {
-  activeTable: string = 'milestones';
+  activeTable: string = 'assigned';
 
   constructor(private _github: Github) {}
 
@@ -31,7 +31,7 @@ class App {
 var github: Github = new Github('angular', 'angular');
 
 bootstrap(App, [ bind(Github).toValue(github) ]);
-bootstrap(Milestones, [ bind(Github).toValue(github) ]);
+bootstrap(Assigned, [ bind(Github).toValue(github) ]);
 bootstrap(Hotlist, [ bind(Github).toValue(github) ]);
 bootstrap(Backlog, [ bind(Github).toValue(github) ]);
 bootstrap(Triage, [ bind(Github).toValue(github) ]);

@@ -8,7 +8,7 @@
  }
 </style>
 
-<div *ng-for="#milestone of milestones"> <!-- one for every milestone -->
+<div *ng-for="#title of titles"> <!-- one for every item -->
   <div [ng-switch]="activePage">
   
   <div *ng-for="#page of pages"> <!-- one for every page -->
@@ -20,13 +20,18 @@
             <div *ng-if="hasPrevPage()" class="valign col s2 right-align">
               <i class="hoverable material-icons medium"><a (click)="prevPage()">chevron_left</a></i>
             </div>
-            <!-- Milestone header -->
+            <!-- Item header -->
             <div [class.offset-s2]="!hasPrevPage()" class="container valign col s8">
               <ul class="hoverable collection">
                 <li class="collection-item">
-                  <h5><a href="https://github.com/angular/angular/milestones/{{ milestone.title }}">
-                    <span class="black-text">{{ milestone.title }}</span>
-                  </a></h5>
+                  <h5>
+                    <a href="https://github.com/angular/angular/milestones/{{ title }}" *ng-if="title != 'other'">
+                      <span class="black-text">{{ title }}</span>
+                    </a>
+                    <a href="https://github.com/angular/angular/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+no%3Amilestone" *ng-if="title == 'other'">
+                      <span class="black-text">{{ title }}</span>
+                    </a>
+                  </h5>
                 </li>
               </ul>
             </div>
@@ -46,7 +51,7 @@
               <tr>
                 
                 <td *ng-for="#assignee of page.assignees"> <!-- one for every assignee -->
-                  <table class="bordered" [class.hoverable]="hasIssue(milestone, assignee)">
+                  <table class="bordered" [class.hoverable]="hasIssue(title, assignee.login)">
                     
                     <!-- Assignee header -->
                     <thead>
@@ -62,7 +67,7 @@
                     
                     <!-- Assignee body of issues -->
                     <tbody>
-                      <tr *ng-for="#issue of issues[milestone.title][assignee.login]">  <!-- one for every issue -->
+                      <tr *ng-for="#issue of issues[title][assignee.login]">  <!-- one for every issue -->
                         <td>
                           <a *ng-if="issue" [href]="issue.html_url">
                             
