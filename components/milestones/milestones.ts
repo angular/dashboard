@@ -1,4 +1,4 @@
-/// <reference path="../../typings/angular2/angular2.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 import {
   Component,
   NgFor,
@@ -9,7 +9,7 @@ import {
   View
 } from 'angular2/angular2';
 import {Observable, Observer} from 'rx';
-import {AngularIssue, Github} from '../../lib/github';
+import {Github, TriagedIssue} from '../../lib/github';
 
 @Component({selector : 'milestones'})
 @View({
@@ -19,7 +19,7 @@ import {AngularIssue, Github} from '../../lib/github';
 export class Milestones {
   milestones: Milestone[] = [];
   assignees: User[];
-  issues: {[title: string] : {[login: string] : AngularIssue[]}};
+  issues: {[title: string] : {[login: string] : TriagedIssue[]}};
 
   pages: Page[] = [];
   pageLimit: number = 12;
@@ -50,20 +50,36 @@ export class Milestones {
     }
   }
 
+  private _paginateAssignees(): Page[] {
+    var pages: Page[] = [];
+    for (var page: number = 0; page * this.pageLimit < this.assignees.length;
+         page++) {
+      pages.push({number : page, assignees : []});
+      for (var offset: number = 0;
+           page * this.pageLimit + offset < this.assignees.length &&
+           offset < this.pageLimit;
+           offset++) {
+        pages[page].assignees.push(
+            this.assignees[page * this.pageLimit + offset]);
+      }
+    }
+    return pages;
+  }
+
   private _populate(): void {
     var assigneeSet = {};
     var milestoneSet = {};
     var assignees: User[] = [];
     var issueCount: {[title: string] : number} = {};
-    var issues: {[title: string] : {[login: string] : AngularIssue[]}} = {};
+    var issues: {[title: string] : {[login: string] : TriagedIssue[]}} = {};
 
     this._github.issues
         // complete the observable sequence provided by github issues
         .take(1)
         // sort issues
-        .flatMap((issues: AngularIssue[]) => {
-          return Observable.from<AngularIssue>(
-              issues.sort((a: AngularIssue, b: AngularIssue) => {
+        .flatMap((issues: TriagedIssue[]) => {
+          return Observable.from<TriagedIssue>(
+              issues.sort((a: TriagedIssue, b: TriagedIssue) => {
                 if (a.priority == b.priority) {
                   return (a.number == b.number) ? 0 : (a.number > b.number)
                                                           ? 1
@@ -79,10 +95,10 @@ export class Milestones {
               }));
         })
         // milestones page is only for issues with a milestone or an assignee
-        .filter((issue: AngularIssue) =>
+        .filter((issue: TriagedIssue) =>
                     !!(issue.milestone) && !!(issue.assignee))
         // map each issue to its respective milestone and assignee
-        .map((issue: AngularIssue) => {
+        .map((issue: TriagedIssue) => {
           var title: string = issue.milestone.title;
           var login: string = issue.assignee.login;
           if (!issues.hasOwnProperty(title)) {
@@ -99,7 +115,7 @@ export class Milestones {
           return issue;
         })
         // create a unique list of assignees
-        .map((issue: AngularIssue) => {
+        .map((issue: TriagedIssue) => {
           if (!assigneeSet.hasOwnProperty(issue.assignee.login)) {
             assignees.push(issue.assignee);
             assigneeSet[issue.assignee.login] = issue.assignee;
@@ -107,7 +123,7 @@ export class Milestones {
           return issue;
         })
         // transform each issue to its respective milestone
-        .map((issue: AngularIssue) => issue.milestone)
+        .map((issue: TriagedIssue) => issue.milestone)
         // remove duplicate milestones
         .filter((milestone: Milestone) =>
                     !milestoneSet.hasOwnProperty(milestone.title))
@@ -146,19 +162,7 @@ export class Milestones {
           });
 
           // place each assignee on a page
-          var pages: Page[] = [];
-          for (var page: number = 0;
-               page * this.pageLimit < this.assignees.length; page++) {
-            pages.push({number : page, assignees : []});
-            for (var offset: number = 0;
-                 page * this.pageLimit + offset < this.assignees.length &&
-                 offset < this.pageLimit;
-                 offset++) {
-              pages[page].assignees.push(
-                  this.assignees[page * this.pageLimit + offset]);
-            }
-          }
-          this.pages = pages;
+          this.pages = this._paginateAssignees();
 
           // sort milestones alphanumberically
           this.milestones = milestones.sort((a: Milestone, b: Milestone) => {

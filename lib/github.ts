@@ -1,23 +1,28 @@
-/// <reference path="../typings/rx/rx.d.ts" />
-/// <reference path="../typings/rx/rx-lite.d.ts" />
-/// <reference path="../typings/github/github.d.ts" />
+/// <reference path="../typings/tsd.d.ts" />
 import {Observable, Subject} from 'rx';
-
 declare var Firebase;
 
 export class Github {
-  private _issues: Subject<AngularIssue[]>;
+  private _issues: Subject<TriagedIssue[]>;
+  private _prs: Subject<any[]>;
   private _ref = new Firebase("https://ng2-projects.firebaseio.com");
 
   constructor(public owner: string, public repository: string) {}
 
   get isAuthenticated(): boolean { return !!(this._ref.getAuth()); }
 
-  get issues(): Observable<AngularIssue[]> {
+  get issues(): Observable<TriagedIssue[]> {
     if (!this._issues) {
-      this.refresh();
+      this._fetchIssues();
     }
     return this._issues;
+  }
+
+  get prs(): Observable<any[]> {
+    if (!this._prs) {
+      this._fetchPrs();
+    }
+    return this._prs;
   }
 
   get username(): string {
@@ -36,57 +41,11 @@ export class Github {
   }
 
   refresh(): void {
-    if (!this._issues) {
-      this._issues = new Subject<AngularIssue[]>();
-    }
-    this._fetchPage(0).toArray().subscribe(
-        (issues: AngularIssue[]) => this._issues.onNext(issues),
-        (error: any) => this._issues.onError(error));
+    this._fetchIssues();
+    this._fetchPrs();
   }
 
-  private _buildUrl(path: string, params: {[param: string] : any}): string {
-    params['access_token'] = this._ref.getAuth().github.accessToken;
-    var arr: Array<string> =
-        Object.keys(params).map((p: string) => `${p}=${params[p]}`);
-    return `https://api.github.com${path}?${arr.join('&')}`;
-  }
-
-  private _fetchPage(page: number): Observable<AngularIssue> {
-    return Observable.create<AngularIssue>((observer:
-                                                Rx.Observer<AngularIssue>) => {
-      var http = new XMLHttpRequest();
-
-      var url = this._buildUrl(`/repos/${this.owner}/${this.repository}/issues`,
-                               {per_page : 100, page : page});
-      http.open("GET", url, true);
-      console.log('requested issues page', page, 'from github!');
-
-      http.onreadystatechange = () => {
-        var response = http.responseText;
-        if (http.readyState == 4) {
-          if (http.status == 200) {
-            var issues: Array<Issue> = JSON.parse(response);
-            if (issues.length >= 100) {
-              this._fetchPage(page + 1)
-                  .merge(Observable.from<Issue>(issues).map(
-                      (issue: Issue) => this._transformIssue(issue)))
-                  .subscribe(observer);
-            } else {
-              Observable.from<Issue>(issues)
-                  .map((issue: Issue) => this._transformIssue(issue))
-                  .subscribe(observer);
-            }
-          } else {
-            observer.onError(response);
-          }
-        }
-      };
-
-      http.send();
-    });
-  }
-
-  private _applyLabels(issue: Issue, angular: AngularIssue): void {
+  private _applyLabels(issue: Issue, angular: TriagedIssue): void {
     issue.labels.forEach((label: Label) => {
       if (/^P\d/.test(label.name)) { // apply priority
         angular.priority = parseInt(label.name[1]);
@@ -111,8 +70,68 @@ export class Github {
     });
   }
 
-  private _transformIssue(issue: Issue): AngularIssue {
-    var angularIssue: AngularIssue = {
+  private _buildUrl(path: string,
+                    params: {[param: string] : string} = {}): string {
+    params['access_token'] = this._ref.getAuth().github.accessToken;
+    params['per_page'] = '100';
+    var arr: Array<string> =
+        Object.keys(params).map((p: string) => `${ p }=${ params[p] }`);
+    return `https://api.github.com${ path }?${ arr.join('&') }`;
+  }
+
+  private _fetchIssues(): void {
+    if (!this._issues) {
+      this._issues = new Subject<TriagedIssue[]>();
+    }
+    var path: string = `/repos/${ this.owner }/${ this.repository }/issues`;
+    this._fetchPage<Issue>(this._buildUrl(path))
+        .map((issue: Issue) => this._triageIssue(issue))
+        .toArray()
+        .subscribeOnNext((issues: TriagedIssue[]) =>
+                             this._issues.onNext(issues));
+  }
+
+  private _fetchPrs(): void {
+    if (!this._prs) {
+      this._prs = new Subject<any[]>();
+    }
+    var path: string = `/repos/${ this.owner }/${ this.repository }/pulls`;
+    var params: {[p: string] : string} = {'state' : 'open'};
+    this._fetchPage<any>(this._buildUrl(path, params))
+        .toArray()
+        .subscribeOnNext((prs: any[]) => this._prs.onNext(prs));
+  }
+
+  private _fetchPage<T>(url: string, page: number = 0): Observable<T> {
+    return Observable.create<T>((observer: Rx.Observer<T>) => {
+      var http = new XMLHttpRequest();
+      http.open("GET", url + `&page=${ page }`, true);
+      console.log('requested page', page, 'from', url);
+
+      http.onreadystatechange = () => {
+        var response = http.responseText;
+        if (http.readyState == 4) {
+          if (http.status == 200) {
+            var data: Array<T> = JSON.parse(response);
+            if (data.length >= 100) {
+              this._fetchPage(url, page + 1)
+                  .merge(Observable.from<T>(data))
+                  .subscribe(observer);
+            } else {
+              Observable.from<T>(data).subscribe(observer);
+            }
+          } else {
+            observer.onError(response);
+          }
+        }
+      };
+
+      http.send();
+    });
+  }
+
+  private _triageIssue(issue: Issue): TriagedIssue {
+    var angularIssue: TriagedIssue = {
       assignee : issue.assignee,
       effort : -1,
       html_url : issue.html_url,
@@ -128,7 +147,7 @@ export class Github {
   }
 }
 
-export interface AngularIssue {
+export interface TriagedIssue {
   assignee: User;
   effort: number;
   html_url: string;
