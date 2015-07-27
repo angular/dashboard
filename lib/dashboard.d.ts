@@ -22,6 +22,6 @@ interface Page {
 }
 
 interface PrMap { 
-  [login: string]: PullRequest[]; 
+  [login: string]: AssignedItem[]; 
 }
 

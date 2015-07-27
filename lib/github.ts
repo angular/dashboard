@@ -3,8 +3,9 @@ import {Observable, Subject} from 'rx';
 declare var Firebase;
 
 export class Github {
+  private _assignedIssues: {[number: number] : AssignedItem} = {};
   private _issues: Subject<AssignedItem[]>;
-  private _prs: Subject<PullRequest[]>;
+  private _prs: Subject<AssignedItem[]>;
   private _ref = new Firebase("https://ng2-projects.firebaseio.com");
 
   constructor(public owner: string, public repository: string) {}
@@ -18,7 +19,7 @@ export class Github {
     return this._issues;
   }
 
-  get prs(): Observable<PullRequest[]> {
+  get prs(): Observable<AssignedItem[]> {
     if (!this._prs) {
       this._fetchPrs();
     }
@@ -88,7 +89,7 @@ export class Github {
     }
     var path: string = `/repos/${ this.owner }/${ this.repository }/issues`;
     this._fetchPage<Issue>(this._buildUrl(path))
-        .map((issue: Issue) => this._triageIssue(issue))
+        .map((issue: Issue) => this._transformIssue(issue))
         .toArray()
         .subscribeOnNext((issues: AssignedItem[]) =>
                              this._issues.onNext(issues));
@@ -96,7 +97,7 @@ export class Github {
 
   private _fetchPrs(): void {
     if (!this._prs) {
-      this._prs = new Subject<PullRequest[]>();
+      this._prs = new Subject<AssignedItem[]>();
     }
     if (!this.isAuthenticated) {
       return;
@@ -104,8 +105,9 @@ export class Github {
     var path: string = `/repos/${ this.owner }/${ this.repository }/pulls`;
     var params: {[p: string] : string} = {'state' : 'open'};
     this._fetchPage<PullRequest>(this._buildUrl(path, params))
+        .map((pr: PullRequest) => this._transformPr(pr))
         .toArray()
-        .subscribeOnNext((prs: PullRequest[]) => this._prs.onNext(prs));
+        .subscribeOnNext((prs: AssignedItem[]) => this._prs.onNext(prs));
   }
 
   private _fetchPage<T>(url: string, page: number = 0): Observable<T> {
@@ -136,7 +138,7 @@ export class Github {
     });
   }
 
-  private _triageIssue(issue: Issue): AssignedItem {
+  private _transformIssue(issue: Issue): AssignedItem {
     var assignedIssue: AssignedItem = {
       assignee : issue.assignee,
       effort : -1,
@@ -149,6 +151,32 @@ export class Github {
       type : ''
     };
     this._applyLabels(issue, assignedIssue);
+    this._assignedIssues[assignedIssue.number] = assignedIssue;
     return assignedIssue;
+  }
+
+  private _transformPr(pr: PullRequest): AssignedItem {
+    var parts: string[] = pr.issue_url.split('/');
+    var issue: AssignedItem =
+        this._assignedIssues[parseInt(parts[parts.length - 1])];
+    var assignedPr: AssignedItem = {
+      assignee : pr.assignee,
+      effort : -1,
+      html_url : pr.html_url,
+      milestone : pr.milestone,
+      number : pr.number,
+      priority : -1,
+      pr_state : '',
+      state : '',
+      type : ''
+    };
+    if (issue) {
+      assignedPr.effort = issue.effort;
+      assignedPr.priority = issue.priority;
+      assignedPr.pr_state = issue.pr_state;
+      assignedPr.state = issue.state;
+      assignedPr.type = issue.type;
+    }
+    return assignedPr;
   }
 }

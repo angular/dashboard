@@ -244,16 +244,16 @@ export class Assigned {
         // complete observable
         .take(1)
         // sort PRs
-        .flatMap((prs: PullRequest[]) => {
-          return Observable.from<any>(prs.sort((a: PullRequest,
-                                                b: PullRequest) => {
+        .flatMap((prs: AssignedItem[]) => {
+          return Observable.from<AssignedItem>(prs.sort((a: AssignedItem,
+                                                         b: AssignedItem) => {
             return (a.number == b.number) ? 0 : (a.number > b.number) ? 1 : -1;
           }));
         })
         // we don't care about PRs without assignees
-        .filter((pr: PullRequest) => !!pr.assignee)
+        .filter((pr: AssignedItem) => !!pr.assignee)
         // update the unique list of assignees
-        .map((pr: PullRequest) => {
+        .map((pr: AssignedItem) => {
           if (!assigneeSet.hasOwnProperty(pr.assignee.login)) {
             assignees.push(pr.assignee);
             assigneeSet[pr.assignee.login] = pr.assignee.login;
@@ -261,7 +261,7 @@ export class Assigned {
           return pr;
         })
         // map each PR to its assignee
-        .map((pr: PullRequest) => {
+        .map((pr: AssignedItem) => {
           var login: string = pr.assignee.login;
           if (!assignedPrs.hasOwnProperty(login)) {
             assignedPrs[login] = [];

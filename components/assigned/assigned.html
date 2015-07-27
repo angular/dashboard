@@ -10,10 +10,9 @@
 
 <div *ng-for="#title of titles"> <!-- one for every item -->
   <div [ng-switch]="activePage">
-  
-  <div *ng-for="#page of pages"> <!-- one for every page -->
-    <div template="ng-switch-when page.number">
-        
+    <div *ng-for="#page of pages"> <!-- one for every page -->
+      <div template="ng-switch-when page.number">
+          
         <div class="section">
           <div class="valign-wrapper row">
             <!-- Page left -->
@@ -41,7 +40,7 @@
             </div>
           </div>
         </div>
-        
+          
         <div class="divider"></div>
         
         <!-- Milestone table -->
@@ -169,86 +168,150 @@
   </div>
 </div>
 
-<!-- PRs -->
-<div>
-  <div [ng-switch]="activePage">
-  
+<div [ng-switch]="activePage">
   <div *ng-for="#page of pages"> <!-- one for every page -->
     <div template="ng-switch-when page.number">
         
-        <div class="section">
-          <div class="valign-wrapper row">
-            <!-- Page left -->
-            <div *ng-if="hasPrevPage()" class="valign col s2 right-align">
-              <i class="hoverable material-icons medium"><a (click)="prevPage()">chevron_left</a></i>
-            </div>
-            <!-- PR header -->
-            <div [class.offset-s2]="!hasPrevPage()" class="container valign col s8">
-              <ul class="hoverable collection">
-                <li class="collection-item">
-                  <h5>
-                    <a href="https://github.com/angular/angular/pulls">
-                      <span class="black-text">prs</span>
-                    </a>
-                  </h5>
-                </li>
-              </ul>
-            </div>
-            <!-- Page right -->
-            <div *ng-if="hasNextPage()" class="valign col s2 left-align">
-              <i class="hoverable material-icons medium"><a (click)="nextPage()">chevron_right</a></i>
-            </div>
+      <div class="section">
+        <div class="valign-wrapper row">
+          <!-- Page left -->
+          <div *ng-if="hasPrevPage()" class="valign col s2 right-align">
+            <i class="hoverable material-icons medium"><a (click)="prevPage()">chevron_left</a></i>
+          </div>
+          <!-- PR header -->
+          <div [class.offset-s2]="!hasPrevPage()" class="container valign col s8">
+            <ul class="hoverable collection">
+              <li class="collection-item">
+                <h5>
+                  <a href="https://github.com/angular/angular/pulls">
+                    <span class="black-text">prs</span>
+                  </a>
+                </h5>
+              </li>
+            </ul>
+          </div>
+          <!-- Page right -->
+          <div *ng-if="hasNextPage()" class="valign col s2 left-align">
+            <i class="hoverable material-icons medium"><a (click)="nextPage()">chevron_right</a></i>
           </div>
         </div>
-        
-        <div class="divider"></div>
-        
-        <!-- PR table -->
-        <div class="section">
-          <table class="center hoverable">
-            <tbody>
-              <tr class="row">
-                
-                <td *ng-for="#assignee of page.assignees" class="col s1"> <!-- one for every assignee -->
-                  <table class="bordered" [class.hoverable]="hasPr(assignee.login)">
-                    
-                    <!-- Assignee header -->
-                    <thead>
-                      <tr>
-                        <th class="center">
-                          <a href="https://github.com/angular/angular/issues?q=is%3Aopen+assignee%3A{{ assignee.login }}">
-                            <img width="60" height="60" class="circle" [src]="assignee.avatar_url" title="{{ assignee.login }}" />
-                            <span class="grey-text text-darken-4">{{ assignee.login }}</span>
-                          </a>
-                        </th>
-                      </tr>
-                    </thead>
-                    
-                    <!-- Assignee body of PRs -->
-                    <tbody>
-                      <tr *ng-for="#pr of prs[assignee.login]">  <!-- one for every PR -->
-                        <td>
-
-                          <!-- PR number -->
-                          <a *ng-if="pr" [href]="pr.html_url">
-                            {{ pr.number }}
-                          </a>
-                          <a *ng-if="!pr"><br></a>
-
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-                
-              </tr>
-            </tbody>
-          </table>
-        </div>
-         
-        <div class="divider"></div>
-        
       </div>
+        
+      <div class="divider"></div>
+        
+      <!-- PR table -->
+      <div class="section">
+        <table class="center hoverable">
+          <tbody>
+            <tr class="row">
+                
+              <td *ng-for="#assignee of page.assignees" class="col s1"> <!-- one for every assignee -->
+                <table class="bordered" [class.hoverable]="hasPr(assignee.login)">
+                      
+                  <!-- Assignee header -->
+                  <thead>
+                    <tr>
+                      <th class="center">
+                        <a href="https://github.com/angular/angular/issues?q=is%3Aopen+assignee%3A{{ assignee.login }}">
+                          <img width="60" height="60" class="circle" [src]="assignee.avatar_url" title="{{ assignee.login }}" />
+                          <span class="grey-text text-darken-4">{{ assignee.login }}</span>
+                        </a>
+                      </th>
+                    </tr>
+                  </thead>
+                      
+                  <!-- Assignee body of PRs -->
+                  <tbody>
+                    <tr *ng-for="#pr of prs[assignee.login]">  <!-- one for every pr -->
+                      <td>
+                        <a *ng-if="pr" [href]="pr.html_url">
+                              
+                          <!-- PR number -->
+                          <div *ng-if="!pr.pr_state && !pr.state">
+                            <div [ng-switch]="pr.priority">
+                              <span template="ng-switch-when 0" class="red-text text-accent-3">P0: {{ pr.number }}</span>
+                              <span template="ng-switch-when 1" class="red-text">P1: {{ pr.number }}</span>
+                              <span template="ng-switch-when 2" class="orange-text">P2: {{ pr.number }}</span>
+                              <span template="ng-switch-when 3" class="amber-text">P3: {{ pr.number }}</span>
+                              <span template="ng-switch-when 4" class="yellow-text">P4: {{ pr.number }}</span>
+                              <span template="ng-switch-default">NP: {{ pr.number }}</span>
+                            </div>
+                          </div>
+                          <div *ng-if="pr.pr_state">
+                            <div [ng-switch]="pr.pr_state">
+                              <div template="ng-switch-when 'blocked'">
+                                <span *ng-if="pr.priority >= 0" class="grey-text text-darken-3">P{{ pr.priority }}: {{ pr.number }}</span>
+                                <span *ng-if="pr.priority < 0" class="grey-text text-darken-3">NP: {{ pr.number }}</span>
+                              </div>
+                              <div template="ng-switch-when 'LGTM'">
+                                <span *ng-if="pr.priority >= 0" class="green-text text-accent-3">P{{ pr.priority }}: {{ pr.number }}</span>
+                                <span *ng-if="pr.priority < 0" class="green-text text-accent-3">NP: {{ pr.number }}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div *ng-if="!pr.pr_state && pr.state">
+                            <div [ng-switch]="pr.state">
+                              <div template="ng-switch-when 'Blocked'">
+                                <span *ng-if="pr.priority >= 0" class="grey-text text-darken-3">P{{ pr.priority }}: {{ pr.number }}</span>
+                                <span *ng-if="pr.priority < 0" class="grey-text text-darken-3">NP: {{ pr.number }}</span>
+                              </div>
+                            </div>
+                          </div>
+                              
+                          <!-- PR state -->
+                          <div *ng-if="!pr.pr_state && !pr.state">
+                            <div [ng-switch]="pr.effort">
+                              <div template="ng-switch-when 1">
+                                <i class="material-icons tiny">grade</i>
+                              </div>
+                              <div template="ng-switch-when 2">
+                                <i class="material-icons tiny">grade</i>
+                                <i class="material-icons tiny">grade</i>
+                              </div>
+                              <div template="ng-switch-when 3">
+                                <i class="material-icons tiny">grade</i>
+                                <i class="material-icons tiny">grade</i>
+                                <i class="material-icons tiny">grade</i>
+                              </div>
+                              <br template="ng-switch-default">
+                            </div>
+                          </div>
+                          <div *ng-if="pr.pr_state">
+                            <div [ng-switch]="pr.pr_state">
+                              <i template="ng-switch-when 'blocked'" class="material-icons tiny">lock</i>
+                              <i template="ng-switch-when 'LGTM'" class="material-icons tiny">thumb_up</i>
+                            </div>
+                          </div>
+                          <div *ng-if="!pr.pr_state && pr.state">
+                            <div [ng-switch]="pr.state">
+                              <i template="ng-switch-when 'Blocked'" class="material-icons tiny">lock</i>
+                            </div>
+                          </div>
+                              
+                          <!-- PR type -->
+                          <div [ng-switch]="pr.type">
+                            <i template="ng-switch-when 'bug'" class="material-icons tiny">report_problem</i>
+                            <i template="ng-switch-when 'chore'" class="material-icons tiny">assignment</i>
+                            <i template="ng-switch-when 'feature'" class="material-icons tiny">library_add</i>
+                            <i template="ng-switch-when 'performance'" class="material-icons tiny">assessment</i>
+                            <i template="ng-switch-when 'refactor'" class="material-icons tiny">spellcheck</i>
+                            <i template="ng-switch-when 'RFC / discussion / question'" class="material-icons tiny">info</i>
+                            <br template="ng-switch-default">
+                          </div>
+                              
+                        </a>
+                        <a *ng-if="!pr"><br><br><br></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+         
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 </div>
