@@ -168,3 +168,87 @@
     </div>
   </div>
 </div>
+
+<!-- PRs -->
+<div>
+  <div [ng-switch]="activePage">
+  
+  <div *ng-for="#page of pages"> <!-- one for every page -->
+    <div template="ng-switch-when page.number">
+        
+        <div class="section">
+          <div class="valign-wrapper row">
+            <!-- Page left -->
+            <div *ng-if="hasPrevPage()" class="valign col s2 right-align">
+              <i class="hoverable material-icons medium"><a (click)="prevPage()">chevron_left</a></i>
+            </div>
+            <!-- Item header -->
+            <div [class.offset-s2]="!hasPrevPage()" class="container valign col s8">
+              <ul class="hoverable collection">
+                <li class="collection-item">
+                  <h5>
+                    <a href="https://github.com/angular/angular/pulls">
+                      <span class="black-text">prs</span>
+                    </a>
+                  </h5>
+                </li>
+              </ul>
+            </div>
+            <!-- Page right -->
+            <div *ng-if="hasNextPage()" class="valign col s2 left-align">
+              <i class="hoverable material-icons medium"><a (click)="nextPage()">chevron_right</a></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <!-- Milestone table -->
+        <div class="section">
+          <table class="center hoverable">
+            <tbody>
+              <tr>
+                
+                <td *ng-for="#assignee of page.assignees"> <!-- one for every assignee -->
+                  <table class="bordered" [class.hoverable]="false">
+                    
+                    <!-- Assignee header -->
+                    <thead>
+                      <tr>
+                        <th class="center">
+                          <a href="https://github.com/angular/angular/issues?q=is%3Aopen+assignee%3A{{ assignee.login }}">
+                            <img width="60" height="60" class="circle" [src]="assignee.avatar_url" title="{{ assignee.login }}" />
+                            <span class="grey-text text-darken-4">{{ assignee.login }}</span>
+                          </a>
+                        </th>
+                      </tr>
+                    </thead>
+                    
+                    <!-- Assignee body of PRs -->
+                    <tbody>
+                      <tr *ng-for="#pr of prs[assignee.login]">  <!-- one for every PR -->
+                        <td>
+
+                          <!-- PR number -->
+                          <a *ng-if="pr" [href]="pr.html_url">
+                            {{ pr.number }}
+                          </a>
+                          <a *ng-if="!pr"><br></a>
+
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+                
+              </tr>
+            </tbody>
+          </table>
+        </div>
+         
+        <div class="divider"></div>
+        
+      </div>
+    </div>
+  </div>
+</div>

@@ -19,6 +19,7 @@ import {Github, TriagedIssue} from '../../lib/github';
 export class Assigned {
   assignees: User[] = [];
   issues: IssueMap = {};
+  prs: {[login: string] : any[]} = {};
   titles: string[] = [];
 
   activePage: number = 0;
@@ -65,25 +66,57 @@ export class Assigned {
   private _populate(): void {
     var assignees: User[] = [];
     var assigneeSet: {[login: string] : string} = {};
+    var issues: IssueMap = {} var pages: Page[] = [];
+    var prCount: number = 0;
+    var prs: PrMap = {};
     var titles: string[] = [];
 
-    this._populateIssues(assignees, assigneeSet)
-        .map((issues: IssueMap) => {
-          Object.keys(issues).sort().forEach((title: string) =>
-                                                 titles.push(title));
-          return issues;
+    this._populatePrs(assignees, assigneeSet)
+        // size the assignee x pr grid
+        .flatMap((prMap: PrMap) => {
+          Object.keys(prMap).forEach((login: string) => {
+            if (prMap[login].length > prCount) {
+              prCount = prMap[login].length;
+            }
+          });
+          prs = prMap return this._populateIssues(assignees, assigneeSet);
         })
-        .subscribeOnNext((issues: IssueMap) => {
-          // sort assignees alphanumerically
-          this.assignees = assignees.sort((a: User, b: User) => {
+        // sort titles
+        .map((issueMap: IssueMap) => {
+          titles = Object.keys(issueMap).sort();
+          issues = issueMap return true;
+        })
+        // sort assignees alphanumerically
+        .map((ok: boolean) => {
+          assignees = assignees.sort((a: User, b: User) => {
             return (a.login == b.login) ? 0 : (a.login > b.login) ? 1 : -1;
           });
-          // place each assignee on a page
-          this.pages = this._paginateAssignees(assignees);
-          // update issues
+          return ok;
+        })
+        // fill in the jagged array
+        .map((ok: boolean) => {
+          assignees.forEach((assignee: User) => {
+            if (!prs[assignee.login]) {
+              prs[assignee.login] = [];
+            }
+            while (prs[assignee.login].length < prCount) {
+              prs[assignee.login].push(null);
+            }
+          });
+          return ok;
+        })
+        // paginate assignees
+        .map((ok: boolean) => {
+          pages = this._paginateAssignees(assignees);
+          return ok;
+        })
+        // update model
+        .subscribeOnNext((ok: boolean) => {
+          this.assignees = assignees;
+          this.pages = pages;
           this.issues = issues;
-          // update titles
           this.titles = titles;
+          this.prs = prs;
         });
   }
 
@@ -176,7 +209,7 @@ export class Assigned {
           titles.push(OTHER);
           return Observable.from<string>(titles);
         })
-        // fill out the jagged grid of assignees
+        // fill out the jagged array
         .map((title: string) => {
           assignees.map((assignee: User) => assignee.login)
               .forEach((login: string) => {
@@ -195,6 +228,43 @@ export class Assigned {
         .toArray()
         .map((oks: boolean[]) => assignedIssues);
   }
+
+  private _populatePrs(assignees: User[],
+                       assigneeSet:
+                           {[login: string] : string}): Observable<PrMap> {
+    var assignedPrs: PrMap = {};
+    return this._github.prs
+        // complete observable
+        .take(1)
+        // sort PRs
+        .flatMap((prs: any[]) => {
+          return Observable.from<any>(prs.sort((a: any, b: any) => {
+            return (a.number == b.number) ? 0 : (a.number > b.number) ? 1 : -1;
+          }));
+        })
+        // we don't care about PRs without assignees
+        .filter((pr: any) => !!pr.assignee)
+        // update the unique list of assignees
+        .map((pr: any) => {
+          if (!assigneeSet.hasOwnProperty(pr.assignee.login)) {
+            assignees.push(pr.assignee);
+            assigneeSet[pr.assignee.login] = pr.assignee.login;
+          }
+          return pr;
+        })
+        // map each PR to its assignee
+        .map((pr: any) => {
+          var login: string = pr.assignee.login;
+          if (!assignedPrs.hasOwnProperty(login)) {
+            assignedPrs[login] = [];
+          }
+          assignedPrs[login].push(pr);
+          return pr.assignee.login;
+        })
+        // wait for all assignees to be processed
+        .toArray()
+        .map((oks: boolean[]) => assignedPrs);
+  }
 }
 
 export interface IssueMap {
@@ -205,3 +275,5 @@ export interface Page {
   number: number;
   assignees: User[];
 }
+
+export interface PrMap { [login: string]: any[]; }
