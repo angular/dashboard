@@ -20,7 +20,7 @@
             <div *ng-if="hasPrevPage()" class="valign col s2 right-align">
               <i class="hoverable material-icons medium"><a (click)="prevPage()">chevron_left</a></i>
             </div>
-            <!-- Item header -->
+            <!-- Issue header -->
             <div [class.offset-s2]="!hasPrevPage()" class="container valign col s8">
               <ul class="hoverable collection">
                 <li class="collection-item">
@@ -182,7 +182,7 @@
             <div *ng-if="hasPrevPage()" class="valign col s2 right-align">
               <i class="hoverable material-icons medium"><a (click)="prevPage()">chevron_left</a></i>
             </div>
-            <!-- Item header -->
+            <!-- PR header -->
             <div [class.offset-s2]="!hasPrevPage()" class="container valign col s8">
               <ul class="hoverable collection">
                 <li class="collection-item">
@@ -210,7 +210,7 @@
               <tr class="row">
                 
                 <td *ng-for="#assignee of page.assignees" class="col s1"> <!-- one for every assignee -->
-                  <table class="bordered" [class.hoverable]="false">
+                  <table class="bordered" [class.hoverable]="hasPr(assignee.login)">
                     
                     <!-- Assignee header -->
                     <thead>

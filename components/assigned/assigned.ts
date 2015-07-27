@@ -32,6 +32,8 @@ export class Assigned {
     return !!this.issues[title][login][0];
   }
 
+  hasPr(login: string): boolean { return !!this.prs[login][0]; }
+
   hasNextPage(): boolean { return this.activePage < this.pages.length - 1; }
 
   hasPrevPage(): boolean { return this.activePage > 0; }
