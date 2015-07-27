@@ -50,6 +50,13 @@ export class Assigned {
     }
   }
 
+  truncate(login: string): string {
+    if (login.length < 13) {
+      return login;
+    }
+    return login.substring(0, 10) + '...';
+  }
+
   private _paginateAssignees(assignees: User[]): Page[] {
     var pages: Page[] = [];
     for (var page: number = 0; page * this.pageLimit < assignees.length;
