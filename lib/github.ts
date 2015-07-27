@@ -83,6 +83,9 @@ export class Github {
     if (!this._issues) {
       this._issues = new Subject<AssignedItem[]>();
     }
+    if (!this.isAuthenticated) {
+      return;
+    }
     var path: string = `/repos/${ this.owner }/${ this.repository }/issues`;
     this._fetchPage<Issue>(this._buildUrl(path))
         .map((issue: Issue) => this._triageIssue(issue))
@@ -94,6 +97,9 @@ export class Github {
   private _fetchPrs(): void {
     if (!this._prs) {
       this._prs = new Subject<PullRequest[]>();
+    }
+    if (!this.isAuthenticated) {
+      return;
     }
     var path: string = `/repos/${ this.owner }/${ this.repository }/pulls`;
     var params: {[p: string] : string} = {'state' : 'open'};
