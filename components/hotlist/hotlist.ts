@@ -1,4 +1,4 @@
-/// <reference path="../../typings/angular2/angular2.d.ts" />
+/// <reference path="../../lib/dashboard.d.ts" />
 import {Component, View} from 'angular2/angular2';
 import {Github} from '../../lib/github';
 

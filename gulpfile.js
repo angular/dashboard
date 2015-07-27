@@ -19,7 +19,7 @@ var tsProject = gulpTsc.createProject('./tsconfig.json');
  * Checks that all files in modules match the format specified in .clang-format.
  */
 gulp.task('check-format', function() {
-  return gulp.src(['./components/**/*.ts', './lib/**/*.ts'])
+  return gulp.src(['./components/**/*.ts', './lib/**/*.ts', '!./**/*.d.ts'])
     .pipe(format.checkFormat('file'))
     .on('warning', function(e) { process.stdout.write(e.message); process.exit(1) });
 });

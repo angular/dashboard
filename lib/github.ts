@@ -1,24 +1,24 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="dashboard.d.ts" />
 import {Observable, Subject} from 'rx';
 declare var Firebase;
 
 export class Github {
-  private _issues: Subject<TriagedIssue[]>;
-  private _prs: Subject<any[]>;
+  private _issues: Subject<AssignedItem[]>;
+  private _prs: Subject<PullRequest[]>;
   private _ref = new Firebase("https://ng2-projects.firebaseio.com");
 
   constructor(public owner: string, public repository: string) {}
 
   get isAuthenticated(): boolean { return !!(this._ref.getAuth()); }
 
-  get issues(): Observable<TriagedIssue[]> {
+  get issues(): Observable<AssignedItem[]> {
     if (!this._issues) {
       this._fetchIssues();
     }
     return this._issues;
   }
 
-  get prs(): Observable<any[]> {
+  get prs(): Observable<PullRequest[]> {
     if (!this._prs) {
       this._fetchPrs();
     }
@@ -45,27 +45,27 @@ export class Github {
     this._fetchPrs();
   }
 
-  private _applyLabels(issue: Issue, angular: TriagedIssue): void {
+  private _applyLabels(issue: Issue, assigned: AssignedItem): void {
     issue.labels.forEach((label: Label) => {
       if (/^P\d/.test(label.name)) { // apply priority
-        angular.priority = parseInt(label.name[1]);
+        assigned.priority = parseInt(label.name[1]);
       } else if (/^type/.test(label.name)) { // apply type
-        angular.type = label.name.replace(/^type:/, '').trim();
+        assigned.type = label.name.replace(/^type:/, '').trim();
       } else if (/^effort/.test(label.name)) { // apply effort
         if (/easy/.test(label.name))
-          angular.effort = 1;
+          assigned.effort = 1;
         else if (/medium/.test(label.name))
-          angular.effort = 2;
+          assigned.effort = 2;
         else if (/hard/.test(label.name))
-          angular.effort = 3;
+          assigned.effort = 3;
       } else if (/^pr_state/.test(label.name)) { // apply pr_state
         var pr_state: string = label.name.replace(/^pr_state:/, '').trim();
         if (pr_state == 'blocked' || pr_state == 'LGTM')
-          angular.pr_state = pr_state;
+          assigned.pr_state = pr_state;
       } else if (/^state/.test(label.name)) { // apply state
         var state: string = label.name.replace(/^state:/, '').trim();
         if (state == 'Blocked' || state == 'PR')
-          angular.state = state;
+          assigned.state = state;
       }
     });
   }
@@ -81,25 +81,25 @@ export class Github {
 
   private _fetchIssues(): void {
     if (!this._issues) {
-      this._issues = new Subject<TriagedIssue[]>();
+      this._issues = new Subject<AssignedItem[]>();
     }
     var path: string = `/repos/${ this.owner }/${ this.repository }/issues`;
     this._fetchPage<Issue>(this._buildUrl(path))
         .map((issue: Issue) => this._triageIssue(issue))
         .toArray()
-        .subscribeOnNext((issues: TriagedIssue[]) =>
+        .subscribeOnNext((issues: AssignedItem[]) =>
                              this._issues.onNext(issues));
   }
 
   private _fetchPrs(): void {
     if (!this._prs) {
-      this._prs = new Subject<any[]>();
+      this._prs = new Subject<PullRequest[]>();
     }
     var path: string = `/repos/${ this.owner }/${ this.repository }/pulls`;
     var params: {[p: string] : string} = {'state' : 'open'};
-    this._fetchPage<any>(this._buildUrl(path, params))
+    this._fetchPage<PullRequest>(this._buildUrl(path, params))
         .toArray()
-        .subscribeOnNext((prs: any[]) => this._prs.onNext(prs));
+        .subscribeOnNext((prs: PullRequest[]) => this._prs.onNext(prs));
   }
 
   private _fetchPage<T>(url: string, page: number = 0): Observable<T> {
@@ -130,8 +130,8 @@ export class Github {
     });
   }
 
-  private _triageIssue(issue: Issue): TriagedIssue {
-    var angularIssue: TriagedIssue = {
+  private _triageIssue(issue: Issue): AssignedItem {
+    var assignedIssue: AssignedItem = {
       assignee : issue.assignee,
       effort : -1,
       html_url : issue.html_url,
@@ -142,19 +142,7 @@ export class Github {
       state : '',
       type : ''
     };
-    this._applyLabels(issue, angularIssue);
-    return angularIssue;
+    this._applyLabels(issue, assignedIssue);
+    return assignedIssue;
   }
-}
-
-export interface TriagedIssue {
-  assignee: User;
-  effort: number;
-  html_url: string;
-  milestone: Milestone;
-  number: number;
-  priority: number;
-  pr_state: string;
-  state: string;
-  type: string;
 }

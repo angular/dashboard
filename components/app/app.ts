@@ -1,4 +1,4 @@
-/// <reference path="../../typings/angular2/angular2.d.ts" />
+/// <reference path="../../lib/dashboard.d.ts" />
 import {bind, bootstrap, Component, NgIf, View} from 'angular2/angular2';
 import {Assigned} from '../assigned/assigned';
 import {Backlog} from '../backlog/backlog';

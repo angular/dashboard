@@ -1,4 +1,4 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../../lib/dashboard.d.ts" />
 import {
   Component,
   NgFor,
@@ -9,7 +9,7 @@ import {
   View
 } from 'angular2/angular2';
 import {Observable, Observer} from 'rx';
-import {Github, TriagedIssue} from '../../lib/github';
+import {Github} from '../../lib/github';
 
 @Component({selector : 'assigned'})
 @View({
@@ -19,7 +19,7 @@ import {Github, TriagedIssue} from '../../lib/github';
 export class Assigned {
   assignees: User[] = [];
   issues: IssueMap = {};
-  prs: {[login: string] : any[]} = {};
+  prs: PrMap = {};
   titles: string[] = [];
 
   activePage: number = 0;
@@ -140,9 +140,9 @@ export class Assigned {
         // complete the observable sequence
         .take(1)
         // sort issues
-        .flatMap((issues: TriagedIssue[]) => {
-          return Observable.from<TriagedIssue>(
-              issues.sort((a: TriagedIssue, b: TriagedIssue) => {
+        .flatMap((issues: AssignedItem[]) => {
+          return Observable.from<AssignedItem>(
+              issues.sort((a: AssignedItem, b: AssignedItem) => {
                 if (a.priority == b.priority) {
                   return (a.number == b.number) ? 0 : (a.number > b.number)
                                                           ? 1
@@ -158,9 +158,9 @@ export class Assigned {
               }));
         })
         // milestones page is only for issues with an assignee
-        .filter((issue: TriagedIssue) => !!issue.assignee)
+        .filter((issue: AssignedItem) => !!issue.assignee)
         // create a unique list of assignees
-        .map((issue: TriagedIssue) => {
+        .map((issue: AssignedItem) => {
           if (!assigneeSet.hasOwnProperty(issue.assignee.login)) {
             assignees.push(issue.assignee);
             assigneeSet[issue.assignee.login] = issue.assignee.login;
@@ -168,7 +168,7 @@ export class Assigned {
           return issue;
         })
         // map each issue without a milestone to its respective assignee
-        .map((issue: TriagedIssue) => {
+        .map((issue: AssignedItem) => {
           var login: string = issue.assignee.login;
           if (!assignedIssues[OTHER].hasOwnProperty(login)) {
             assignedIssues[OTHER][login] = [];
@@ -182,9 +182,9 @@ export class Assigned {
           return issue;
         })
         // the rest of the chain is only for issues with a milestone
-        .filter((issue: TriagedIssue) => !!issue.milestone)
+        .filter((issue: AssignedItem) => !!issue.milestone)
         // map each issue to its respective milestone and assignee
-        .map((issue: TriagedIssue) => {
+        .map((issue: AssignedItem) => {
           var title: string = issue.milestone.title;
           var login: string = issue.assignee.login;
           if (!assignedIssues.hasOwnProperty(title)) {
@@ -242,15 +242,16 @@ export class Assigned {
         // complete observable
         .take(1)
         // sort PRs
-        .flatMap((prs: any[]) => {
-          return Observable.from<any>(prs.sort((a: any, b: any) => {
+        .flatMap((prs: PullRequest[]) => {
+          return Observable.from<any>(prs.sort((a: PullRequest,
+                                                b: PullRequest) => {
             return (a.number == b.number) ? 0 : (a.number > b.number) ? 1 : -1;
           }));
         })
         // we don't care about PRs without assignees
-        .filter((pr: any) => !!pr.assignee)
+        .filter((pr: PullRequest) => !!pr.assignee)
         // update the unique list of assignees
-        .map((pr: any) => {
+        .map((pr: PullRequest) => {
           if (!assigneeSet.hasOwnProperty(pr.assignee.login)) {
             assignees.push(pr.assignee);
             assigneeSet[pr.assignee.login] = pr.assignee.login;
@@ -258,27 +259,16 @@ export class Assigned {
           return pr;
         })
         // map each PR to its assignee
-        .map((pr: any) => {
+        .map((pr: PullRequest) => {
           var login: string = pr.assignee.login;
           if (!assignedPrs.hasOwnProperty(login)) {
             assignedPrs[login] = [];
           }
           assignedPrs[login].push(pr);
-          return pr.assignee.login;
+          return true;
         })
         // wait for all assignees to be processed
         .toArray()
         .map((oks: boolean[]) => assignedPrs);
   }
 }
-
-export interface IssueMap {
-  [title: string]: {[login: string] : TriagedIssue[]};
-}
-
-export interface Page {
-  number: number;
-  assignees: User[];
-}
-
-export interface PrMap { [login: string]: any[]; }
