@@ -54,8 +54,8 @@ export class Assigned {
          page++) {
       pages.push({number : page, assignees : []});
       for (var offset: number = 0;
-           page * this.pageLimit + offset < assignees.length &&
-           offset < this.pageLimit;
+           offset < this.pageLimit &&
+           page * this.pageLimit + offset < assignees.length;
            offset++) {
         pages[page].assignees.push(assignees[page * this.pageLimit + offset]);
       }
@@ -66,7 +66,8 @@ export class Assigned {
   private _populate(): void {
     var assignees: User[] = [];
     var assigneeSet: {[login: string] : string} = {};
-    var issues: IssueMap = {} var pages: Page[] = [];
+    var issues: IssueMap = {};
+    var pages: Page[] = [];
     var prCount: number = 0;
     var prs: PrMap = {};
     var titles: string[] = [];
@@ -79,17 +80,21 @@ export class Assigned {
               prCount = prMap[login].length;
             }
           });
-          prs = prMap return this._populateIssues(assignees, assigneeSet);
+          prs = prMap;
+          return this._populateIssues(assignees, assigneeSet);
         })
         // sort titles
         .map((issueMap: IssueMap) => {
           titles = Object.keys(issueMap).sort();
-          issues = issueMap return true;
+          issues = issueMap;
+          return true;
         })
         // sort assignees alphanumerically
         .map((ok: boolean) => {
           assignees = assignees.sort((a: User, b: User) => {
-            return (a.login == b.login) ? 0 : (a.login > b.login) ? 1 : -1;
+            var left: string = a.login.toLowerCase();
+            var right: string = b.login.toLowerCase();
+            return (left == right) ? 0 : (left > right) ? 1 : -1;
           });
           return ok;
         })
@@ -132,7 +137,7 @@ export class Assigned {
     issueCount[OTHER] = 0;
 
     return this._github.issues
-        // complete the observable sequence provided by github milestoneIssues
+        // complete the observable sequence
         .take(1)
         // sort issues
         .flatMap((issues: TriagedIssue[]) => {
