@@ -48,9 +48,9 @@
         <div class="section">
           <table class="center hoverable">
             <tbody>
-              <tr>
+              <tr class="row">
                 
-                <td *ng-for="#assignee of page.assignees"> <!-- one for every assignee -->
+                <td *ng-for="#assignee of page.assignees" class="col s1"> <!-- one for every assignee -->
                   <table class="bordered" [class.hoverable]="hasIssue(title, assignee.login)">
                     
                     <!-- Assignee header -->
@@ -203,13 +203,13 @@
         
         <div class="divider"></div>
         
-        <!-- Milestone table -->
+        <!-- PR table -->
         <div class="section">
           <table class="center hoverable">
             <tbody>
-              <tr>
+              <tr class="row">
                 
-                <td *ng-for="#assignee of page.assignees"> <!-- one for every assignee -->
+                <td *ng-for="#assignee of page.assignees" class="col s1"> <!-- one for every assignee -->
                   <table class="bordered" [class.hoverable]="false">
                     
                     <!-- Assignee header -->
