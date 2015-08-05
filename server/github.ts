@@ -5,7 +5,37 @@ import https = require('https');
 
 export type PublishFn = (key: Object, data: Object) => void;
 
-class Github {
+var PRIORITIES = {
+	'P0: critical': 'P0',
+	'P1: urgent': 'P1',
+	'P2: required': 'P2',
+	'P3: important': 'P3',
+	'P4: nice to have': 'P4',
+	'P!: backlog': 'P!'
+};
+
+var EFFORTS = {
+	'effort1: easy (hour)': 'easy',
+	'effort2: medium (day)': 'medium',
+	'effort3: hard (week)': 'hard'
+};
+
+var TYPES = {
+	'type: bug': 'bug',
+	'type: chore': 'chore',
+	'type: feature': 'feature',
+	'type: performance': 'performance',
+	'type: refactor': 'refactor',
+	'type: RFC / discussion / question': 'discuss'
+};
+
+var BLOCKS = {
+	'state: Blocked': 'blocked',
+	'state: Needs Design': 'design',
+	'state: PR': 'pr'
+};
+
+export class Github {
 	
 	constructor(public user: string, public repo: string, public authToken: string, public publish: PublishFn) {}
 	
@@ -38,7 +68,6 @@ class Github {
 					str += chunk;
 				});
 				resp.on('end', () => {
-          console.log('done: ' + str);
 					cbk(null, JSON.parse(str));
 				});
 			}
@@ -53,8 +82,9 @@ class Github {
 		}
 		switch (req['$type']) {
 			case 'milestones':
-        console.log("loading milestones");
 				return this._milestones(req, cbk);
+			case 'issues':
+				return this._issues(req, cbk);
 		}
 	}
 	
@@ -63,21 +93,15 @@ class Github {
       if (err) return cbk(err);
 			var output = [];
 			var cnt = 0;
-      console.log('got ' + data.length + ' milestones');
 			for (var i = 0; i < data.length; i++) {
-				var raw = data[i];
-				output[i] = {
-					'number': raw['number'],
-					'name': raw['title'],
-					'url': raw['url'],
-					'issues': []
-				};
-				this._loadIssues(output[i], (err, res) => {
+				output[i] = data[i]['number'];
+			}
+			this.publish(req, output);
+			for (var i = 0; i < data.length; i++) {
+				this._processMilestone({'$type': 'milestone', 'id': data[i]['number']}, data[i], (err) => {
 					if (err) return cbk(err);
 					cnt++;
-					if (cnt == data.length) {
-            this.publish(req, output);
-          }
+					if (cnt == data.length) return cbk();
 				});
 			}
 		});
@@ -86,16 +110,21 @@ class Github {
   _milestone(req: Object, cbk: Function) {
     this._request('milestone/' + (+req['id']), {}, (err, data) => {
       if (err) return cbk(err);
-      var milestone = {
-        'id': data['number'],
-        'name': data['title'],
-        'url': data['url'],
-        'desc': data['description'],
-        'due': data['due_on']
-      };
-      this.publish(req, milestone);
-      return cbk();
-    });
+	  this._processMilestone(req, data, cbk);
+	});
+  }
+
+  _processMilestone(req: Object, data: Object, cbk: Function): void {
+	var milestone = {
+	  'id': data['number'],
+	  'name': data['title'],
+	  'url': data['url'],
+	  'desc': data['description'],
+	  'due': data['due_on'],
+	  'issues': data['open_issues']
+	};
+	this.publish(req, milestone);
+	return cbk();
   }
   
   _issues(req: Object, cbk: Function) {
@@ -103,24 +132,50 @@ class Github {
     if (req.hasOwnProperty('milestone')) {
       args['milestone'] = +req['milestone'];
     }
-		this._request('issues', args, (err, data) => {
-			if (err) return cbk(err);
-      cbk(null, data);
-		});
+	this._request('issues', args, (err, data) => {
+		if (err) return cbk(err);
+		var output = [];
+		var cnt = 0;
+		for (var i = 0; i < data.length; i++) {
+			output[i] = data[i]['number'];
+		}
+		this.publish(req, output);
+		for (var i = 0; i < data.length; i++) {
+			this._processIssue({'$type': 'issue', 'id': data[i]['number']}, data[i], (err) => {
+				if (err) return cbk(err);
+				cnt++;
+				if (cnt == data.length) return cbk();
+			});
+		}
+	});
   }
-	
-	_loadIssues(milestone: Object, cbk: Function) {
-    
-	}
+  
+  _processIssue(req: Object, data: Object, cbk: Function): void {
+	  var issue = {
+		  'id': data['number'],
+		  'name': data['title'],
+		  'url': data['url'],
+		  'priority': 'Unknown',
+		  'effort': 'Unknown',
+		  'blocked': 'no',
+		  'assigned': ''
+	  };
+	  if (data.hasOwnProperty('assignee') && data['assignee'] && data['assignee'].hasOwnProperty('login')) {
+		  issue['assigned'] = data['assignee']['login'];
+	  }
+	  if (data.hasOwnProperty('labels')) {
+		  for (var i = 0; i < data['labels'].length; i++) {
+			  var label = data['labels'][i]['name'];
+			  if (PRIORITIES.hasOwnProperty(label)) {
+				  issue['priority'] = PRIORITIES[label];
+			  } else if (EFFORTS.hasOwnProperty(label)) {
+				  issue['effort'] = EFFORTS[label];
+			  } else if (BLOCKS.hasOwnProperty(label)) {
+				  issue['blocked'] = BLOCKS[label];
+			  }
+		  }
+	  }
+	  this.publish(req, issue);
+	  return cbk();
+  }
 }
-
-var gh = new Github('angular', 'angular', '<auth>');
-gh.handle({'$type': 'milestones'}, (err, data) => {
-  if (err) {
-    console.log('error:');
-    console.log(err);
-    return;
-  }
-	console.log('done:');
-	console.log(data);
-});
