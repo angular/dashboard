@@ -4,7 +4,6 @@ var gulp = require('gulp');
 var gulpClean = require('gulp-clean');
 var gulpTsc = require('gulp-typescript');
 
-
 // ==========
 // config
 
@@ -19,7 +18,7 @@ var tsProject = gulpTsc.createProject('./tsconfig.json');
  * Checks that all files in modules match the format specified in .clang-format.
  */
 gulp.task('check-format', function() {
-  return gulp.src(['./components/**/*.ts', './lib/**/*.ts', '!./**/*.d.ts'])
+  return gulp.src(['./modules/**/*.ts', '!./**/*.d.ts'])
     .pipe(format.checkFormat('file'))
     .on('warning', function(e) { process.stdout.write(e.message); process.exit(1) });
 });
@@ -36,7 +35,7 @@ gulp.task('!clean', function() {
  * Transcompile all TypeScript code to JavaScript.
  */
 gulp.task('build', ['!clean'], function() {
-  var tsResult = gulp.src(['./components/**/*.ts', './lib/**/*.ts', './server/**/*.ts']).pipe(gulpTsc(tsProject));
+  var tsResult = gulp.src(['./modules/**/*.ts']).pipe(gulpTsc(tsProject));
   return tsResult.js.pipe(gulp.dest(tsProject.options.outDir));
 });
 

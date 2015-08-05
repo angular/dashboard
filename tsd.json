@@ -25,6 +25,54 @@
     },
     "socket.io/socket.io.d.ts": {
       "commit": "070e3a5e095d2a2f043f999bd9fb36fe9d5f68ab"
+    },
+    "rx/rx.aggregates.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.all.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.time.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.async.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.time-lite.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.async-lite.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.binding.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.coincidence.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.binding-lite.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.coincidence-lite.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.joinpatterns.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.virtualtime.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.testing.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.experimental.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.backpressure.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
+    },
+    "rx/rx.backpressure-lite.d.ts": {
+      "commit": "983126e131a2b81739053d60e4bbdbb46d6577b7"
     }
   }
 }
