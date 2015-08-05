@@ -1,4 +1,4 @@
-/// <reference path="../../lib/dashboard.d.ts" />
+/// <reference path="../../../typings/angular2/angular2.d.ts" />
 import {
   Component,
   NgFor,

@@ -1,4 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
 
 interface AssignedItem {
   assignee: User;
@@ -24,4 +23,3 @@ interface Page {
 interface PrMap { 
   [login: string]: AssignedItem[]; 
 }
-
