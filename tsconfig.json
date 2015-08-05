@@ -6,7 +6,7 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "sourceRoot": "./modules",
+        "sourceRoot": ".",
         "outDir": "./build",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true

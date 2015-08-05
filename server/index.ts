@@ -1,7 +1,7 @@
-/// <reference path="../../typings/socket.io/socket.io.d.ts" />
-/// <reference path="../../node_modules/tactical/dist/tactical/src/socket.d.ts" />
-/// <reference path="../../node_modules/tactical/dist/tactical/src/json.d.ts" />
-/// <reference path="../../typings/rx/rx.all.d.ts" />
+/// <reference path="../typings/socket.io/socket.io.d.ts" />
+/// <reference path="../node_modules/tactical/dist/tactical/src/socket.d.ts" />
+/// <reference path="../node_modules/tactical/dist/tactical/src/json.d.ts" />
+/// <reference path="../typings/rx/rx.all.d.ts" />
 
 import {Github} from './github';
 import io = require('socket.io');
