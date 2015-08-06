@@ -20,6 +20,7 @@ class GithubService implements tactical.BackendService {
     }
 
     onRequest(key: Object, publish: tactical.PublishHandler, callback: tactical.Callback): void {
+      console.log(key);
       var github = new Github(this.user, this.repo, this.authToken, (objKey: Object, data: Object) => {
         var md5 = crypto.createHash('md5');
         md5.update(json.serializeValue(data));

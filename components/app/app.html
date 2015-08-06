@@ -6,24 +6,8 @@
 <div class="navbar-fixed">
   <nav class="blue accent-3">
     <div class="nav-wrapper">
-      <!-- Filters issues based on search keywords -->
-      <div class="left">
-        <form>
-          <div class="hoverable input-field">
-            <input id="search" type="search" value="Out sick today!" required />
-            <label for="search"><i class="material-icons">search</i></label>
-          </div>
-        </form>
-      </div>
       <!-- Link to github issues for Angular -->
       <a href="https://github.com/angular/angular/issues" class="brand-logo center">Angular Issues</a>
-      <!-- Table selectors -->
-      <ul class="right">
-        <li [class.active]="activeTable == 'assigned'"><a (click)="setActive('assigned')">Assigned</a></li>
-        <li [class.active]="activeTable == 'hotlist'"><a (click)="setActive('hotlist')">Hotlist</a></li>
-        <li [class.active]="activeTable == 'backlog'"><a (click)="setActive('backlog')">Backlog</a></li>
-        <li [class.active]="activeTable == 'triage'"><a (click)="setActive('triage')">Triage</a></li>
-      </ul>
     </div>
   </nav>
 </div>

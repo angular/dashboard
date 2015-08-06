@@ -85,6 +85,8 @@ export class Github {
 				return this._milestones(req, cbk);
 			case 'issues':
 				return this._issues(req, cbk);
+      case 'milestone':
+        return this._milestone(req, cbk);
 		}
 	}
 	
@@ -108,23 +110,23 @@ export class Github {
 	}
   
   _milestone(req: Object, cbk: Function) {
-    this._request('milestone/' + (+req['id']), {}, (err, data) => {
+    this._request('milestones/' + (+req['id']), {}, (err, data) => {
       if (err) return cbk(err);
-	  this._processMilestone(req, data, cbk);
-	});
+	    this._processMilestone(req, data, cbk);
+	  });
   }
 
   _processMilestone(req: Object, data: Object, cbk: Function): void {
-	var milestone = {
-	  'id': data['number'],
-	  'name': data['title'],
-	  'url': data['url'],
-	  'desc': data['description'],
-	  'due': data['due_on'],
-	  'issues': data['open_issues']
-	};
-	this.publish(req, milestone);
-	return cbk();
+  	var milestone = {
+  	  'id': data['number'],
+  	  'name': data['title'],
+  	  'url': data['url'],
+  	  'desc': data['description'],
+  	  'due': data['due_on'],
+  	  'issues': data['open_issues']
+  	};
+  	this.publish(req, milestone);
+  	return cbk();
   }
   
   _issues(req: Object, cbk: Function) {
@@ -132,22 +134,22 @@ export class Github {
     if (req.hasOwnProperty('milestone')) {
       args['milestone'] = +req['milestone'];
     }
-	this._request('issues', args, (err, data) => {
-		if (err) return cbk(err);
-		var output = [];
-		var cnt = 0;
-		for (var i = 0; i < data.length; i++) {
-			output[i] = data[i]['number'];
-		}
-		this.publish(req, output);
-		for (var i = 0; i < data.length; i++) {
-			this._processIssue({'$type': 'issue', 'id': data[i]['number']}, data[i], (err) => {
-				if (err) return cbk(err);
-				cnt++;
-				if (cnt == data.length) return cbk();
-			});
-		}
-	});
+  	this._request('issues', args, (err, data) => {
+  		if (err) return cbk(err);
+  		var output = [];
+  		var cnt = 0;
+  		for (var i = 0; i < data.length; i++) {
+  			output[i] = data[i]['number'];
+  		}
+  		this.publish(req, output);
+  		for (var i = 0; i < data.length; i++) {
+  			this._processIssue({'$type': 'issue', 'id': data[i]['number']}, data[i], (err) => {
+  				if (err) return cbk(err);
+  				cnt++;
+  				if (cnt == data.length) return cbk();
+  			});
+  		}
+  	});
   }
   
   _processIssue(req: Object, data: Object, cbk: Function): void {

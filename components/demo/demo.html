@@ -1,4 +1,15 @@
-<h1>Demo</h1>
-<div *ng-for="#stone of milestones">
-  <span>{{ stone.name }}</span><span>{{ stone.due }}</span>
+<div class="container">
+  <h4>Demo</h4>
+  <div *ng-for="#stone of milestones">
+    <div class="row">
+      <div class="col s12">
+        <div class="card-panel hoverable">
+          <div class="row">
+            <a class="col s9" [router-link]="['/milestone', {id: stone.id}]">{{ stone. name }}</a>
+            <span class="col s3 right-align">{{ stone.due }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
