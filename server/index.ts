@@ -30,8 +30,8 @@ class GithubService implements tactical.BackendService {
     }
 }
 
-if (process.argv.length < 5) {
-	console.log('Usage: node ' + process.argv[1] + ' <user> <repo> <auth>');
+if (process.argv.length < 6) {
+	console.log('Usage: node ' + process.argv[1] + ' <user> <repo> <auth> <port>');
 	process.exit(-1);
 }
 
@@ -50,4 +50,6 @@ socketIo.on('connection', (socket: SocketIO.Socket) => {
   socketMgr.accept(socket);
 });
 
-server.listen(8080, () => console.log('Up and running!'));
+var port = +process.argv[5];
+server.listen(port, () => console.log('Up and running on ' + port + '!'));
+server.on('error', (err) => console.log(err));
