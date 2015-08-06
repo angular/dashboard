@@ -2,10 +2,8 @@
 /// <reference path="../../typings/angular2/router.d.ts" />
 import {bind, bootstrap, Component, NgIf, View} from 'angular2/angular2';
 import {Router, RouterOutlet, routerInjectables, appBaseHrefToken} from 'angular2/router';
-
 import {Demo} from '../demo/demo';
 import {Milestone} from '../milestone/milestone';
-
 import tactical_dm = require('tactical/dist/tactical/src/data_manager');
 import tactical_socket = require('tactical/dist/tactical/src/socket');
 import tactical_store = require('tactical/dist/tactical/src/tactical_store');
