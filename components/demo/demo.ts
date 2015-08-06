@@ -22,6 +22,7 @@ export class Demo implements OnDestroy {
     var milestonesById: {} = {};
     this._sub = dm.request({'$type': 'milestones'})
         .flatMapLatest((ids: number[]) => {
+          console.log('published milestones: ', ids);
           milestonesById = {};
           milestonesStaging = [];
           milestoneCount = ids.length;
@@ -45,7 +46,6 @@ export class Demo implements OnDestroy {
           }
           this.milestones = milestonesStaging;
           lifeCycle.tick();
-          console.log('published milestones: ', milestonesStaging);
         });
   }
   

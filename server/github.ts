@@ -122,7 +122,7 @@ export class Github {
   	var milestone = {
   	  'id': data['number'],
   	  'name': data['title'],
-  	  'url': data['url'],
+  	  'url': data['html_turl'],
   	  'desc': data['description'],
   	  'due': data['due_on'],
   	  'issues': data['open_issues']
@@ -155,17 +155,17 @@ export class Github {
   }
   
   _issue(req: Object, cbk: Function) {
-    this._request('issues/' + (+req['id']), (err, data) => {
+    this._request('issues/' + (+req['id']), {}, (err, data) => {
       if (err) return cbk(err);
       this._processIssue(req, data, cbk);
-    }
+    });
   }
   
   _processIssue(req: Object, data: Object, cbk: Function): void {
 	  var issue = {
 		  'id': data['number'],
 		  'name': data['title'],
-		  'url': data['url'],
+		  'url': data['html_url'],
 		  'priority': 'Unknown',
 		  'effort': 'Unknown',
 		  'blocked': 'no',
