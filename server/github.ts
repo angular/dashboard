@@ -87,6 +87,8 @@ export class Github {
 				return this._issues(req, cbk);
       case 'milestone':
         return this._milestone(req, cbk);
+      case 'issue':
+        return this._issue(req, cbk);
 		}
 	}
 	
@@ -150,6 +152,13 @@ export class Github {
   			});
   		}
   	});
+  }
+  
+  _issue(req: Object, cbk: Function) {
+    this._request('issues/' + (+req['id']), (err, data) => {
+      if (err) return cbk(err);
+      this._processIssue(req, data, cbk);
+    }
   }
   
   _processIssue(req: Object, data: Object, cbk: Function): void {
