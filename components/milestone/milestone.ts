@@ -24,7 +24,7 @@ export class Milestone implements OnDestroy {
           this.milestone = milestone;
         });
     var issuesById = {};
-      var issuesStaging = [];
+    var issuesStaging = [];
     var issueCount;
     this._subIssues = dm.request({'$type': 'issues', 'milestone': milestoneId})
         .flatMapLatest((ids: number[]) => {

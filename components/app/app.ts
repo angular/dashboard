@@ -27,9 +27,9 @@ class App {
 }
 
 bootstrap(App, routerInjectables.concat([bind(tactical_dm.TacticalDataManager).toFactory(() => {
-  var socket = io.connect('ws://localhost:8081');
-  var backend = new tactical_socket.SocketIOClient(socket);
-  var store = new tactical_store.TacticalStore(tactical_idb.IndexedDBFactory, 'demo');
-  return new tactical_dm.TacticalDataManager(backend, store);
-}, []),
-bind(appBaseHrefToken).toValue("/")]));
+    var socket = io.connect('ws://localhost:8081');
+    var backend = new tactical_socket.SocketIOClient(socket);
+    var store = new tactical_store.TacticalStore(tactical_idb.IndexedDBFactory, 'demo');
+    return new tactical_dm.TacticalDataManager(backend, store);
+  }, []),
+  bind(appBaseHrefToken).toValue("/")]));

@@ -3,9 +3,7 @@
 import {Component, NgFor, View, OnDestroy, Inject, LifeCycle} from 'angular2/angular2';
 import {Router, RouterLink, RouterOutlet} from 'angular2/router';
 import {Observable} from 'rx';
-
 import {Milestone} from '../../server/schema';
-
 import tactical_dm = require('tactical/dist/tactical/src/data_manager');
 
 @Component({selector : 'demo', appInjector : [ tactical_dm.TacticalDataManager ]})
